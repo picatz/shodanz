@@ -1,5 +1,5 @@
-require "oj"
 require "unirest"
+require "oj"
 require "shodanz/version"
 require "shodanz/api"
 require "shodanz/client"

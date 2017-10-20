@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   
   spec.add_dependency "unirest"
   spec.add_dependency "oj"
+  spec.add_dependency "json", "~> 1.8.6"
 
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 10.0"
