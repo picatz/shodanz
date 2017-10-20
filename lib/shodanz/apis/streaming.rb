@@ -13,6 +13,8 @@ module Shodanz
     # 
     # @author Kent 'picat' Gruber
     class Streaming
+      attr_accessor :key
+      
       # The Streaming API is an HTTP-based service that returns 
       # a real-time stream of data collected by Shodan.
       URL = "https://stream.shodan.io/"
@@ -21,12 +23,6 @@ module Shodanz
       def initialize(key: ENV['SHODAN_API_KEY'])
         self.key = key
         warn "No key has been found or provided!" unless self.key?
-      end
-
-      # Change the API key to a given string.
-      # @param key [String]
-      def key=(key)
-        @key = key
       end
 
       # Check if there's an API key.

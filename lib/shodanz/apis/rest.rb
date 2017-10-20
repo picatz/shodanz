@@ -7,6 +7,8 @@ module Shodanz
     # which you can get from Shodan.
     # @author Kent 'picat' Gruber
     class REST
+      attr_accessor :key
+
       # The path to the REST API endpoint.
       URL = "https://api.shodan.io/"
 
@@ -14,12 +16,6 @@ module Shodanz
       def initialize(key: ENV['SHODAN_API_KEY'])
         self.key = key
         warn "No key has been found or provided!" unless self.key?
-      end
-
-      # Change the API key to a given string.
-      # @param key [String]
-      def key=(key)
-        @key = key
       end
 
       # Check if there's an API key.
@@ -54,7 +50,7 @@ module Shodanz
       #   rest_api.host_count("apache", country: "US")
       #   rest_api.host_count("apache", country: "US", state: "MI")
       #   rest_api.host_count("apache", country: "US", state: "MI", city: "Detroit")
-      def host_count(queryi = "", facets: {}, **params)
+      def host_count(query = "", facets: {}, **params)
         params[:query] = query
         params = turn_into_query(params)
         facets = turn_into_facets(facets)
@@ -181,7 +177,7 @@ module Shodanz
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
         resp = Unirest.get "#{URL}#{path}?key=#{@key}", parameters: params
-        raise resp.body if resp.code != 200 #and resp.body.has_key?("error")
+        raise resp if resp.code != 200 #and resp.body.has_key?("error")
         resp.body
       end
 
