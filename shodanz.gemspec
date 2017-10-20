@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
   
-  spec.add_dependency "unirest"
-  spec.add_dependency "oj"
-  spec.add_dependency "json", "~> 1.8.6"
-
+  spec.add_dependency "unirest", "1.1.2"
+  spec.add_dependency "json", "1.8.6"
+  spec.add_dependency "oj", "3.3.8"
+  
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
