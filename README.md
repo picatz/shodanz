@@ -54,7 +54,6 @@ client.rest_api.host_count("apache")
 client.rest_api.host_count("apache", country: "US")
 client.rest_api.host_count("apache", country: "US", state: "MI")
 client.rest_api.host_count("apache", country: "US", state: "MI", city: "Detroit") 
-client.rest_api.host_count("apache", country: "US", state: "MI", city: "Detroit") 
 client.rest_api.host_count("nginx".  facets: { country: 5 })
 client.rest_api.host_count("apache". facets: { country: 5 })
 ```
