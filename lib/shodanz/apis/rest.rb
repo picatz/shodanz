@@ -5,6 +5,7 @@ module Shodanz
     # hosts, get summary information on queries and a variety 
     # of other utilities. This requires you to have an API key
     # which you can get from Shodan.
+    #
     # @author Kent 'picat' Gruber
     class REST
       attr_accessor :key
@@ -112,7 +113,7 @@ module Shodanz
       def crawl_for(**params)
         params[:query] = ""
         params = turn_into_query(params)
-        post("shodan/scan/internet", params)
+        post('shodan/scan/internet', params)
       end
 
       # Check the progress of a previously submitted scan request. 
@@ -122,49 +123,52 @@ module Shodanz
 
       # Use this method to obtain a list of search queries that users have saved in Shodan.
       def community_queries(**params)
-        get("shodan/query", params)
+        get('shodan/query', params)
       end
 
       # Use this method to search the directory of search queries that users have saved in Shodan.
       def search_for_community_query(query, **params)
         params[:query] = query
         params = turn_into_query(params)
-        get("shodan/query/search", params) 
+        get('shodan/query/search', params) 
       end
 
       # Use this method to obtain a list of popular tags for the saved search queries in Shodan.
       def popular_query_tags(size = 10)
         params = {}
         params[:size] = size
-        get("shodan/query/tags", params)
+        get('shodan/query/tags', params)
       end
 
       # Returns information about the Shodan account linked to this API key.
       def profile
-        get("account/profile")
+        get('account/profile')
       end
 
       # Look up the IP address for the provided list of hostnames.
       def resolve(*hostnames)
-        get("dns/resolve", hostnames: hostnames.join(","))
+        get('dns/resolve', hostnames: hostnames.join(","))
       end
 
-      # Look up the hostnames that have been defined for the given list of IP addresses.
+      # Look up the hostnames that have been defined for the 
+      # given list of IP addresses.
       def reverse_lookup(*ips)
-        get("dns/reverse", ips: ips.join(","))
+        get('dns/reverse', ips: ips.join(","))
       end
 
-      # Shows the HTTP headers that your client sends when connecting to a webserver.
+      # Shows the HTTP headers that your client sends when 
+      # connecting to a webserver.
       def http_headers
-        get("tools/httpheaders")
+        get('tools/httpheaders')
       end
 
       # Get your current IP address as seen from the Internet.
       def my_ip
-        get("tools/my_ip")
+        get('tools/my_ip')
       end
 
-      # Calculates a honeypot probability score ranging from 0 (not a honeypot) to 1.0 (is a honeypot).
+      # Calculates a honeypot probability score ranging 
+      # from 0 (not a honeypot) to 1.0 (is a honeypot).
       def honeypot_score(ip)
         get("labs/honeyscore/#{ip}")
       end
@@ -177,38 +181,43 @@ module Shodanz
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
         resp = Unirest.get "#{URL}#{path}?key=#{@key}", parameters: params
-        raise resp if resp.code != 200 #and resp.body.has_key?("error")
+        if resp.code != 200
+          binding.pry
+          raise resp.body['error'] if resp.body.key?('error')
+          raise resp
+        end
         resp.body
       end
 
       # Perform a direct POST HTTP request to the REST API.
       def post(path, **params)
         resp = Unirest.post "#{URL}#{path}?key=#{@key}", parameters: params
-        raise resp.body["error"] if resp.code != 200 and resp.body.has_key?("error")
+        if resp.code != 200
+          raise resp.body['error'] if resp.body.key?('error')
+          raise resp
+        end
         resp.body
       end
 
       private
 
       def turn_into_query(params)
-        filters = params.reject { |key, value| key == :query }
+        filters = params.reject { |key, _| key == :query }
         filters.each do |key, value|
           params[:query] << " #{key}:#{value}"
         end
-        params.select { |key, value| key == :query }
+        params.select { |key, _| key == :query }
       end
 
       def turn_into_facets(facets)
-        filters = facets.reject { |key, value| key == :facets }
+        filters = facets.reject { |key, _| key == :facets }
         facets[:facets] = []
         filters.each do |key, value|
           facets[:facets] << "#{key}:#{value}"
         end
-        facets[:facets] = facets[:facets].join(",")
-        facets.select { |key, value| key == :facets }
+        facets[:facets] = facets[:facets].join(',')
+        facets.select { |key, _| key == :facets }
       end
-
     end
-
   end
 end
