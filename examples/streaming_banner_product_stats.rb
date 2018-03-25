@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'shodanz'
 
-# clean CTL+C exit
+# clean CTRL+C exit
 trap "SIGINT" do
   exit 0
 end
@@ -9,7 +9,7 @@ end
 # streaming API client
 streaming_api = Shodanz.api.streaming.new
 
-# every key's value stats at 0
+# every key's value starts at zero
 stats = Hash.new(0)
 
 # collect banners 
