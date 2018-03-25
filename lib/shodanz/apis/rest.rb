@@ -164,7 +164,7 @@ module Shodanz
 
       # Get your current IP address as seen from the Internet.
       def my_ip
-        get('tools/my_ip')
+        get('tools/myip')
       end
 
       # Calculates a honeypot probability score ranging 
