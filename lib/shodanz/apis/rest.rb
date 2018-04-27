@@ -182,7 +182,6 @@ module Shodanz
       def get(path, **params)
         resp = Unirest.get "#{URL}#{path}?key=#{@key}", parameters: params
         if resp.code != 200
-          binding.pry
           raise resp.body['error'] if resp.body.key?('error')
           raise resp
         end
