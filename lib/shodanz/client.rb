@@ -17,6 +17,7 @@ module Shodanz
     # Optionally provide your shodan API key, or the environment
     # variable SHODAN_API_KEY will be used.
     def initialize(key: ENV['SHODAN_API_KEY'])
+      raise "No API key has been found or provided! ( setup your SHODAN_API_KEY environment varialbe )" unless key?
       # pass the given API key to each of the underlying clients
       #
       # Note: you can optionally change these API keys later, if you
