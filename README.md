@@ -11,8 +11,9 @@ A modern Ruby [gem](https://rubygems.org/) for [Shodan](https://www.shodan.io/),
 ```ruby
 require "shodanz"
 
-client = Shodanz.client.new
+client = Shodanz.client.new(key: "YOUR_API_KEY")
 ```
+> You can also set the `SHODAN_API_KEY` environment variable instead of passing the API key as an argument when creating a client.
 
 ## REST API
 
