@@ -14,7 +14,7 @@ module Shodanz
     # @author Kent 'picat' Gruber
     class Streaming
       attr_accessor :key
-      
+
       # The Streaming API is an HTTP-based service that returns 
       # a real-time stream of data collected by Shodan.
       URL = "https://stream.shodan.io/"

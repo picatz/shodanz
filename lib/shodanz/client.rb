@@ -1,7 +1,7 @@
 module Shodanz
   # General client container class for all three
-  # of Shodan's available API endpoints in a
-  # convient place to use.
+  # of the available API endpoints in a
+  # convenient place to use.
   #
   # @author Kent 'picat' Gruber
   class Client
@@ -14,7 +14,7 @@ module Shodanz
 
     # Create a new client to connect to any of the APIs.
     #
-    # Optionally provide your shodan API key, or the environment
+    # Optionally provide your Shodan API key, or the environment
     # variable SHODAN_API_KEY will be used.
     def initialize(key: ENV['SHODAN_API_KEY'])
       raise "No API key has been found or provided! ( setup your SHODAN_API_KEY environment varialbe )" if key.nil?
