@@ -35,9 +35,9 @@ module Shodanz
         Async do
           # param keys should all be strings
           params = params.transform_keys { |key| key.to_s } 
-          # make POST request to server
+          # make GET request to server
           resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
-
+          # read body line-by-line
           resp.body.read.each_line do |line|
             yield JSON.parse(line)
           end
