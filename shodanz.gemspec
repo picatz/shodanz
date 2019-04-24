@@ -20,8 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   
   spec.add_dependency "unirest", "1.1.2"
-  spec.add_dependency "json" # specifying version breaks things, what?
-  spec.add_dependency "oj", "3.5.0"
   
   spec.add_development_dependency "bundler", "~> 1.16.1"
   spec.add_development_dependency "rake", "~> 12.3.1"
