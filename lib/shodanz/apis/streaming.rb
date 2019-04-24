@@ -1,3 +1,5 @@
+require_relative 'utils.rb'
+
 module Shodanz
 
   module API
@@ -13,16 +15,22 @@ module Shodanz
     # 
     # @author Kent 'picat' Gruber
     class Streaming
+      include Shodanz::API::Utils
+
+      # @return [String]
       attr_accessor :key
 
       # The Streaming API is an HTTP-based service that returns 
       # a real-time stream of data collected by Shodan.
-      URL = "https://stream.shodan.io/"
+      URL = 'https://stream.shodan.io/'.freeze
 
       # @param key [String] SHODAN API key, defaulted to the *SHODAN_API_KEY* enviroment variable.
       def initialize(key: ENV['SHODAN_API_KEY'])
-        self.key = key
-        warn "No key has been found or provided!" unless self.key?
+        @url      = URL
+        @internet = Async::HTTP::Internet.new
+        self.key  = key
+
+        warn 'No key has been found or provided!' unless self.key?
       end
 
       # Check if there's an API key.
@@ -44,7 +52,7 @@ module Shodanz
       #     puts data
       #   end
       def banners(**params)
-        slurp_stream("shodan/banners", params) do |data|
+        slurp_stream('shodan/banners', params) do |data|
           yield data
         end
       end
@@ -57,7 +65,7 @@ module Shodanz
       #     puts data
       #   end
       def banners_within_asns(*asns, **params)
-        slurp_stream("shodan/asn/#{asns.join(",")}", params) do |data|
+        slurp_stream("shodan/asn/#{asns.join(',')}", params) do |data|
           yield data
         end
       end
@@ -84,7 +92,7 @@ module Shodanz
       #     puts data
       #   end
       def banners_within_countries(*params)
-        slurp_stream("shodan/countries/#{params.join(",")}") do |data|
+        slurp_stream("shodan/countries/#{params.join(',')}") do |data|
           yield data
         end
       end
@@ -99,7 +107,7 @@ module Shodanz
       #     puts data
       #   end
       def banners_on_ports(*params)
-        slurp_stream("shodan/ports/#{params.join(",")}") do |data|
+        slurp_stream("shodan/ports/#{params.join(',')}") do |data|
           yield data
         end
       end
@@ -123,7 +131,7 @@ module Shodanz
       # Use the REST API methods to create/ delete/ manage your network alerts and 
       # use the Streaming API to subscribe to them.
       def alerts
-        slurp_stream("alert") do |data|
+        slurp_stream('alert') do |data|
           yield data
         end
       end
@@ -135,53 +143,6 @@ module Shodanz
         end
       end
 
-      private
-
-      # Perform the main function of consuming the streaming API. 
-      def slurp_stream(path, **params)
-        uri = URI("#{URL}#{path}?key=#{@key}")
-        Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-          request = Net::HTTP::Get.new uri
-          begin
-            http.request request do |resp|
-              raise "Unable to connect to Streaming API" if resp.code != "200"
-              # Buffer for Shodan's bullshit.
-              raw_body = ""
-              resp.read_body do |chunk| 
-                if /^\{"product":.*\}\}\n/.match(chunk)
-                  begin
-                    yield Oj.load(chunk)
-                  rescue
-                    # yolo
-                  end
-                elsif /.*\}\}\n$/.match(chunk)
-                  next if raw_body.empty?
-                  raw_body << chunk
-                  raw_body
-                elsif /^\{.*\b/.match(chunk) 
-                  raw_body << chunk
-                end
-                if m = /^\{"product":.*\}\}\n/.match(raw_body)
-                  index = 0
-                  while matched = m[index]
-                    index += 1
-                    raw_body = raw_body.gsub(/^\{"product":.*\}\}\n/, "")
-                    begin
-                      yield Oj.load(matched)
-                    rescue
-                      # yolo
-                    end
-                  end
-                end
-              end
-            end
-          ensure
-            http.finish
-          end
-        end
-      end
-
     end
-
   end
 end
