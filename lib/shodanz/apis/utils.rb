@@ -31,6 +31,7 @@ module Shodanz
         end.result
       end
 
+      # Perform the main function of consuming the streaming API. 
       def slurp_stream(path, **params)
         Async do
           # param keys should all be strings
