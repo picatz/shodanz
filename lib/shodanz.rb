@@ -1,5 +1,5 @@
-require 'unirest'
-require 'oj'
+require 'async'
+require 'async/http/internet'
 require 'shodanz/version'
 require 'shodanz/api'
 require 'shodanz/client'
