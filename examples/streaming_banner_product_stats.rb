@@ -15,5 +15,8 @@ stats = Hash.new(0)
 # collect banners 
 streaming_api.banners do |banner|
   product = banner['product']
+  
+  next if product.nil?
+
   puts "#{stats[product] += 1} #{product}"
 end

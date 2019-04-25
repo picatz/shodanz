@@ -1,3 +1,4 @@
+require 'json'
 require 'async'
 require 'async/http/internet'
 require 'shodanz/version'
