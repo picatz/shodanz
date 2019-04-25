@@ -1,3 +1,5 @@
+require_relative 'utils.rb'
+
 module Shodanz
 
   module API
@@ -8,14 +10,20 @@ module Shodanz
     #
     # @author Kent 'picat' Gruber
     class REST
+      include Shodanz::API::Utils
+
+      # @return [String]
       attr_accessor :key
 
       # The path to the REST API endpoint.
-      URL = "https://api.shodan.io/"
+      URL = 'https://api.shodan.io/'.freeze
 
       # @param key [String] SHODAN API key, defaulted to the *SHODAN_API_KEY* enviroment variable.
       def initialize(key: ENV['SHODAN_API_KEY'])
-        self.key = key
+        @url      = URL
+        @internet = Async::HTTP::Internet.new
+        self.key  = key
+
         warn "No key has been found or provided!" unless self.key?
       end
 
@@ -51,7 +59,7 @@ module Shodanz
       #   rest_api.host_count("apache", country: "US")
       #   rest_api.host_count("apache", country: "US", state: "MI")
       #   rest_api.host_count("apache", country: "US", state: "MI", city: "Detroit")
-      def host_count(query = "", facets: {}, **params)
+      def host_count(query = '', facets: {}, **params)
         params[:query] = query
         params = turn_into_query(params)
         facets = turn_into_facets(facets)
@@ -62,7 +70,7 @@ module Shodanz
       # to get summary information for different properties.
       # == Example
       #   rest_api.host_search("apache", country: "US", facets: { city: "Detroit" }, page: 1, minify: false)
-      def host_search(query = "", facets: {}, page: 1, minify: true, **params)
+      def host_search(query = '', facets: {}, page: 1, minify: true, **params)
         params[:query] = query
         params = turn_into_query(params)
         facets = turn_into_facets(facets)
@@ -73,7 +81,7 @@ module Shodanz
 
       # This method lets you determine which filters are being used by 
       # the query string and what parameters were provided to the filters.
-      def host_search_tokens(query = "", **params)
+      def host_search_tokens(query = '', **params)
         params[:query] = query
         params = turn_into_query(params)
         get("shodan/host/search/tokens", params)
@@ -176,26 +184,6 @@ module Shodanz
       # Returns information about the API plan belonging to the given API key.
       def info
         get('api-info')
-      end
-
-      # Perform a direct GET HTTP request to the REST API.
-      def get(path, **params)
-        resp = Unirest.get "#{URL}#{path}?key=#{@key}", parameters: params
-        if resp.code != 200
-          raise resp.body['error'] if resp.body.key?('error')
-          raise resp
-        end
-        resp.body
-      end
-
-      # Perform a direct POST HTTP request to the REST API.
-      def post(path, **params)
-        resp = Unirest.post "#{URL}#{path}?key=#{@key}", parameters: params
-        if resp.code != 200
-          raise resp.body['error'] if resp.body.key?('error')
-          raise resp
-        end
-        resp.body
       end
 
       private
