@@ -105,7 +105,6 @@ module Shodanz
       #
       # IP, IPs or netblocks (in CIDR notation) that should get crawled.
       def scan(*ips)
-        raise "Not enough scan credits!" unless self.info["scan_credits"] >= 1
         post("shodan/scan", ips: ips.join(","))
       end
 
