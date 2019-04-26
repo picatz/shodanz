@@ -120,7 +120,7 @@ RSpec.describe Shodanz::API::REST do
       expect(resp['string']).to eq(query)
     end
 
-    describe 'returns the total number of results that matches a given query' do
+    describe 'returns a parsed version of the query' do
       it 'works synchronously' do
         check
       end
