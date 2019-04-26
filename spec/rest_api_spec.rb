@@ -133,4 +133,27 @@ RSpec.describe Shodanz::API::REST do
     end
   end
 
+  describe '#ports' do
+    def check
+      if Async::Task.current?
+        resp = @client.ports.wait
+      else
+        resp = @client.ports
+      end
+      expect(resp).to be_a(Array)
+    end
+
+    describe 'returns a list of port numbers that the crawlers are looking for' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
+
 end
