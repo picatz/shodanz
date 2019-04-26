@@ -6,13 +6,13 @@ module Shodanz
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
         return sync_get(path, params) unless Async::Task.current? 
-         async_get(path, params)
+        async_get(path, params)
       end
 
       # Perform a direct POST HTTP request to the REST API.
       def post(path, **params)
         return sync_post(path, params) unless Async::Task.current? 
-         async_post(path, params)
+        async_post(path, params)
       end
 
       # Perform the main function of consuming the streaming API. 
@@ -42,6 +42,8 @@ module Shodanz
           end
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
+        ensure
+          resp.close unless resp.nil?
         end
       end
 
@@ -57,9 +59,11 @@ module Shodanz
           end
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
+        ensure
+          resp.close unless resp.nil?
         end.result
       end
-      
+
       def async_post(path, **params)
         Async::Task.current.async do 
           # param keys should all be strings
@@ -68,9 +72,11 @@ module Shodanz
           resp = @internet.post("#{@url}#{path}?key=#{@key}", params)
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
+        ensure
+          resp.close unless resp.nil?
         end
       end
-      
+
       def sync_post(path, **params)
         Async do 
           # param keys should all be strings
@@ -79,6 +85,8 @@ module Shodanz
           resp = @internet.post("#{@url}#{path}?key=#{@key}", params)
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
+        ensure
+          resp.close unless resp.nil?
         end.result
       end
 
@@ -95,6 +103,8 @@ module Shodanz
               yield JSON.parse(line)
             end
           end
+        ensure
+          resp.close unless resp.nil?
         end
       rescue => error
         binding.pry
@@ -113,6 +123,8 @@ module Shodanz
               yield JSON.parse(line)
             end
           end
+        ensure
+          resp.close unless resp.nil?
         end
       end
     end
