@@ -75,7 +75,34 @@ RSpec.describe Shodanz::API::REST do
       end
     end
 
-    context 'asyncronously' do
+    context 'asynchronously' do
+      it 'returns the total number of results that matches a given query' do
+        Async do
+          check
+        end
+      end
+    end
+  end
+
+  describe '.host_search' do
+    let(:query) { "apache" }
+
+    def check
+      if Async::Task.current?
+        resp = @client.host_search(query).result
+      else
+        resp = @client.host_search(query)
+      end
+      expect(resp).to be_a(Hash)
+    end
+
+    context 'synchronously' do
+      it 'returns the total number of results that matches a given query' do
+        check
+      end
+    end
+
+    context 'asynchronously' do
       it 'returns the total number of results that matches a given query' do
         Async do
           check
