@@ -8,7 +8,7 @@ RSpec.describe Shodanz::API::REST do
   describe '.info' do
     def check
       if Async::Task.current?
-        resp = @client.info.result
+        resp = @client.info.wait
       else
         resp = @client.info
       end
@@ -35,7 +35,7 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host(ip).result
+        resp = @client.host(ip).wait
       else
         resp = @client.host(ip)
       end
@@ -62,7 +62,7 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host_count(query).result
+        resp = @client.host_count(query).wait
       else
         resp = @client.host_count(query)
       end
@@ -89,7 +89,8 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host_search(query).result
+        binding.pry
+        resp = @client.host_search(query).wait
       else
         resp = @client.host_search(query)
       end
