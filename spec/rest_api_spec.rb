@@ -15,13 +15,13 @@ RSpec.describe Shodanz::API::REST do
       expect(resp).to be_a(Hash)
     end
 
-    context 'syncronously' do
+    context 'synchronously' do
       it 'returns info about the underlying token' do
         check
       end
     end
 
-    context 'asyncronously' do
+    context 'asynchronously' do
       it 'returns info about the underlying token' do
         Async do
           check
@@ -42,13 +42,13 @@ RSpec.describe Shodanz::API::REST do
       expect(resp).to be_a(Hash)
     end
 
-    context 'syncronously' do
+    context 'synchronously' do
       it 'returns all services that have been found on the given host IP' do
         check
       end
     end
 
-    context 'asyncronously' do
+    context 'asynchronously' do
       it 'returns all services that have been found on the given host IP' do
         Async do
           check
@@ -69,7 +69,7 @@ RSpec.describe Shodanz::API::REST do
       expect(resp).to be_a(Hash)
     end
 
-    context 'syncronously' do
+    context 'synchronously' do
       it 'returns the total number of results that matches a given query' do
         check
       end
