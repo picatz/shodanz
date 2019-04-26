@@ -156,4 +156,26 @@ RSpec.describe Shodanz::API::REST do
     end
   end
 
+  describe '#protocols' do
+    def check
+      if Async::Task.current?
+        resp = @client.protocols.wait
+      else
+        resp = @client.protocols
+      end
+      expect(resp).to be_a(Hash)
+    end
+
+    describe 'returns all protocols that can be used when performing on-demand scans' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
 end
