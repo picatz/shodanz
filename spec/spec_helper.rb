@@ -1,6 +1,8 @@
 require "bundler/setup"
 require "async/rspec"
 require "shodanz"
+require "pry"
+require "readline"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
