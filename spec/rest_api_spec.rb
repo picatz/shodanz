@@ -239,4 +239,41 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
+  
+  describe '#search_for_community_query' do
+    let(:query) { "apache" }
+    
+    def check
+      if Async::Task.current?
+        resp = @client.search_for_community_query("apache").wait
+      else
+        resp = @client.search_for_community_query("apache")
+      end
+      expect(resp).to be_a(Hash)
+      expect(resp['total']).to be_a(Integer)
+      expect(resp['matches']).to be_a(Array)
+
+      example_match = resp['matches'].first
+
+      expect(example_match['votes']).to be_a(Integer)
+      expect(example_match['description']).to be_a(String)
+      expect(example_match['tags']).to be_a(Array)
+      expect(example_match['timestamp']).to be_a(String)
+      expect(example_match['title']).to be_a(String)
+      expect(example_match['query']).to be_a(String)
+    end
+
+    describe 'returns information about the shodan account' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
+  
 end
