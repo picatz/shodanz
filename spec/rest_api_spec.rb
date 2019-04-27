@@ -361,4 +361,27 @@ RSpec.describe Shodanz::API::REST do
     end
   end
   
+  describe '#my_ip' do
+    def check
+      if Async::Task.current?
+        resp = @client.my_ip.wait
+      else
+        resp = @client.my_ip
+      end
+      expect(resp).to be_a(String)
+    end
+
+    describe 'shows the current IP address as seen from the internet' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
+  
 end
