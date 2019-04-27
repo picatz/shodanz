@@ -327,5 +327,38 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
+
+  describe '#http_headers' do
+    def check
+      if Async::Task.current?
+        resp = @client.http_headers.wait
+      else
+        resp = @client.http_headers
+      end
+      expect(resp).to be_a(Hash)
+      # TODO figure out why there are two content length headers?
+      expect(resp['Content_Length']).to be_a(String)
+      expect(resp['Content_Length']).to eq('0')
+      expect(resp['Content-Length']).to be_a(String)
+      expect(resp['Content-Length']).to eq('0')
+      # TODO maybe specify a content-type?
+      expect(resp['Content-Type']).to be_a(String)
+      expect(resp['Content-Type']).to eq('')
+      expect(resp['Host']).to be_a(String)
+      expect(resp['Host']).to eq('api.shodan.io')
+    end
+
+    describe 'shows the HTTP headers that your client sends when connecting to a webserver' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
   
 end
