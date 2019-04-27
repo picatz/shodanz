@@ -301,4 +301,31 @@ RSpec.describe Shodanz::API::REST do
     end
   end
   
+  describe '#reverse_lookup' do
+    let(:ip) { '8.8.8.8' }
+    
+    def check
+      if Async::Task.current?
+        resp = @client.reverse_lookup(ip).wait
+      else
+        resp = @client.reverse_lookup(ip)
+      end
+      expect(resp).to be_a(Hash)
+      expect(resp[ip]).to be_a(Array)
+      expect(resp[ip].first).to eq('google-public-dns-a.google.com')
+    end
+
+    describe 'returns information about the shodan account' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
+  
 end
