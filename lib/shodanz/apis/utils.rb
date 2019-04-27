@@ -34,12 +34,15 @@ module Shodanz
         Async::Task.current.async do 
           # param keys should all be strings
           params = params.transform_keys { |key| key.to_s }
-          # make GET request to server, checking if query is needed to be passed
-          if query = params.delete('query')
-            resp = @internet.get("#{@url}#{path}?query=#{query}&key=#{@key}", params)
-          else
-            resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
+          # build up url string based on special params
+          url = "#{@url}#{path}?key=#{@key}"
+          # special params
+          ['query', 'ips', 'hostnames'].each do |param|
+            if value = params.delete(param)
+              url += "&#{param}=#{value}"
+            end
           end
+          resp = @internet.get(url)
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
         ensure
@@ -51,14 +54,19 @@ module Shodanz
         Async do
           # param keys should all be strings
           params = params.transform_keys { |key| key.to_s }
-          # make GET request to server, checking if query is needed to be passed
-          if query = params.delete('query')
-            resp = @internet.get("#{@url}#{path}?query=#{query}&key=#{@key}", params)
-          else
-            resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
+          # build up url string based on special params
+          url = "#{@url}#{path}?key=#{@key}"
+          # special params
+          ['query', 'ips', 'hostnames'].each do |param|
+            if value = params.delete(param)
+              url += "&#{param}=#{value}"
+            end
           end
+          resp = @internet.get(url)
           # parse all lines in the response body as JSON
           JSON.parse(resp.body.join)
+        rescue => error
+          binding.pry
         ensure
           resp.close unless resp.nil?
         end.result
