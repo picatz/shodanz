@@ -227,7 +227,7 @@ RSpec.describe Shodanz::API::REST do
       expect(example_match['query']).to be_a(String)
     end
 
-    describe 'returns information about the shodan account' do
+    describe 'obtains a list of search queries that users have saved' do
       it 'works synchronously' do
         check
       end
@@ -263,7 +263,7 @@ RSpec.describe Shodanz::API::REST do
       expect(example_match['query']).to be_a(String)
     end
 
-    describe 'returns information about the shodan account' do
+    describe 'search the directory of search queries that users have saved' do
       it 'works synchronously' do
         check
       end
@@ -288,7 +288,7 @@ RSpec.describe Shodanz::API::REST do
       expect(resp).to be_a(Hash)
     end
 
-    describe 'returns information about the shodan account' do
+    describe 'resolves domains to ip addresses' do
       it 'works synchronously' do
         check
       end
@@ -315,7 +315,7 @@ RSpec.describe Shodanz::API::REST do
       expect(resp[ip].first).to eq('google-public-dns-a.google.com')
     end
 
-    describe 'returns information about the shodan account' do
+    describe 'resolves ip addresses to domains' do
       it 'works synchronously' do
         check
       end
