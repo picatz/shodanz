@@ -178,4 +178,31 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
+  
+  describe '#profile' do
+    def check
+      if Async::Task.current?
+        resp = @client.profile.wait
+      else
+        resp = @client.profile
+      end
+      expect(resp).to be_a(Hash)
+      expect(resp["member"]).to be(true).or be(false)
+      expect(resp["credits"]).to be_a(Integer)
+      expect(resp["created"]).to be_a(String)
+      expect(resp.key?("display_name")).to be(true)
+    end
+
+    describe 'returns information about the shodan account' do
+      it 'works synchronously' do
+        check
+      end
+
+      it 'works asynchronously' do
+        Async do
+          check
+        end
+      end
+    end
+  end
 end
