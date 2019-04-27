@@ -245,9 +245,9 @@ RSpec.describe Shodanz::API::REST do
     
     def check
       if Async::Task.current?
-        resp = @client.search_for_community_query("apache").wait
+        resp = @client.search_for_community_query(query).wait
       else
-        resp = @client.search_for_community_query("apache")
+        resp = @client.search_for_community_query(query)
       end
       expect(resp).to be_a(Hash)
       expect(resp['total']).to be_a(Integer)
