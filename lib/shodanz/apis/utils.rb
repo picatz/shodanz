@@ -51,6 +51,8 @@ module Shodanz
             raise Shodanz::Errors::NoInformation if json['error'].casecmp("no information available")
           end
           json
+        #rescue EOFError # hmmmm
+        #  retry # will always hit right away ...
         ensure
           resp.close unless resp.nil?
         end
@@ -108,13 +110,21 @@ module Shodanz
         Async::Task.current.async do 
           # param keys should all be strings
           params = params.transform_keys { |key| key.to_s } 
+          # check if limit
+          if limit = params.delete('limit')
+            counter = 0
+          end
           # make GET request to server
           resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
           # read body line-by-line
-          until resp.body.empty?
+          until resp.body.nil? || resp.body.empty?
             resp.body.read.each_line do |line|
               next if line.strip.empty?
               yield JSON.parse(line)
+              if limit
+                counter += 1
+                resp.close if counter == limit
+              end
             end
           end
         ensure
@@ -129,12 +139,21 @@ module Shodanz
         Async do
           # param keys should all be strings
           params = params.transform_keys { |key| key.to_s } 
+          # check if limit
+          if limit = params.delete('limit')
+            counter = 0
+          end
           # make GET request to server
           resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
           # read body line-by-line
-          until resp.body.empty? 
+          until resp.body.nil? || resp.body.empty? 
             resp.body.read.each_line do |line|
+              next if line.strip.empty?
               yield JSON.parse(line)
+              if limit
+                counter += 1
+                resp.close if counter == limit
+              end
             end
           end
         ensure
