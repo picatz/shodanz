@@ -44,7 +44,13 @@ module Shodanz
           end
           resp = @internet.get(url)
           # parse all lines in the response body as JSON
-          JSON.parse(resp.body.join)
+          json = JSON.parse(resp.body.join)
+          
+          if json.is_a?(Hash) && json.key?('error')
+            raise Shodanz::Errors::RateLimited if json['error'].casecmp("rate limit reached")
+            raise Shodanz::Errors::NoInformation if json['error'].casecmp("no information available")
+          end
+          json
         ensure
           resp.close unless resp.nil?
         end
