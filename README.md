@@ -24,8 +24,8 @@ require 'shodanz'
 
 client = Shodanz.client.new
 
-# Asyncronously stream live banner info from shodan
-# and check the IP addresses against the expierimental
+# Asynchronously stream live banner info from shodan
+# and check the IP addresses against the experimental
 # honeypot scoring service to find potential honeypots.
 client.streaming_api.banners do |banner|
   if ip = banner['ip_str']
