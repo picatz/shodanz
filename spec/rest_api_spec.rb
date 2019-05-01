@@ -5,6 +5,11 @@ RSpec.describe Shodanz::API::REST do
     @client = Shodanz.api.rest.new
   end
 
+  before(:each) do
+    # try to avoid rate limit
+    sleep 1
+  end
+
   describe '#info' do
     def check
       if Async::Task.current?
@@ -39,7 +44,7 @@ RSpec.describe Shodanz::API::REST do
       end
       expect(resp).to be_a(Hash)
     end
-    
+
     describe 'returns all services that have been found on the given host IP' do
       it 'works synchronously' do
         check
@@ -52,7 +57,7 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#host_count' do
     let(:query) { "apache" }
 
@@ -64,7 +69,7 @@ RSpec.describe Shodanz::API::REST do
       end
       expect(resp).to be_a(Hash)
     end
-    
+
     describe 'returns the total number of results that matches a given query' do
       it 'works synchronously' do
         check
@@ -178,7 +183,7 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#profile' do
     def check
       if Async::Task.current?
@@ -205,7 +210,7 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#community_queries' do
     def check
       if Async::Task.current?
@@ -239,10 +244,10 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#search_for_community_query' do
     let(:query) { "apache" }
-    
+
     def check
       if Async::Task.current?
         resp = @client.search_for_community_query(query).wait
@@ -275,10 +280,10 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#resolve' do
     let(:hostname) { "google.com" }
-    
+
     def check
       if Async::Task.current?
         resp = @client.resolve(hostname).wait
@@ -300,10 +305,10 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#reverse_lookup' do
     let(:ip) { '8.8.8.8' }
-    
+
     def check
       if Async::Task.current?
         resp = @client.reverse_lookup(ip).wait
@@ -360,7 +365,7 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#my_ip' do
     def check
       if Async::Task.current?
@@ -383,10 +388,10 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
   describe '#honeypot_score' do
     let(:ip) { '8.8.8.8' }
-    
+
     def check
       if Async::Task.current?
         resp = @client.honeypot_score(ip).wait
@@ -409,5 +414,5 @@ RSpec.describe Shodanz::API::REST do
       end
     end
   end
-  
+
 end
