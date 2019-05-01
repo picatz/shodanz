@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shodanz
-  VERSION = '1.0.7'.freeze
+  VERSION = '1.0.7'
 end
