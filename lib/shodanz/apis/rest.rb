@@ -187,26 +187,6 @@ module Shodanz
       def info
         get('api-info')
       end
-
-      private
-
-      def turn_into_query(params)
-        filters = params.reject { |key, _| key == :query }
-        filters.each do |key, value|
-          params[:query] << " #{key}:#{value}"
-        end
-        params.select { |key, _| key == :query }
-      end
-
-      def turn_into_facets(facets)
-        filters = facets.reject { |key, _| key == :facets }
-        facets[:facets] = []
-        filters.each do |key, value|
-          facets[:facets] << "#{key}:#{value}"
-        end
-        facets[:facets] = facets[:facets].join(',')
-        facets.select { |key, _| key == :facets }
-      end
     end
   end
 end
