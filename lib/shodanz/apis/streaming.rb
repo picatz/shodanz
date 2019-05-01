@@ -1,18 +1,19 @@
 require_relative 'utils.rb'
 
-module Shodanz
+# frozen_string_literal: true
 
+module Shodanz
   module API
-    # The REST API provides methods to search Shodan, look up 
-    # hosts, get summary information on queries and a variety 
+    # The REST API provides methods to search Shodan, look up
+    # hosts, get summary information on queries and a variety
     # of other utilities. This requires you to have an API key
     # which you can get from Shodan.
     #
-    # Note: Only 1-5% of the data is currently provided to 
-    # subscription-based API plans. If your company is interested 
-    # in large-scale, real-time access to all of the Shodan data 
+    # Note: Only 1-5% of the data is currently provided to
+    # subscription-based API plans. If your company is interested
+    # in large-scale, real-time access to all of the Shodan data
     # please contact us for pricing information (sales@shodan.io).
-    # 
+    #
     # @author Kent 'picat' Gruber
     class Streaming
       include Shodanz::API::Utils
@@ -20,9 +21,9 @@ module Shodanz
       # @return [String]
       attr_accessor :key
 
-      # The Streaming API is an HTTP-based service that returns 
+      # The Streaming API is an HTTP-based service that returns
       # a real-time stream of data collected by Shodan.
-      URL = 'https://stream.shodan.io/'.freeze
+      URL = 'https://stream.shodan.io/'
 
       # @param key [String] SHODAN API key, defaulted to the *SHODAN_API_KEY* enviroment variable.
       def initialize(key: ENV['SHODAN_API_KEY'])
@@ -30,17 +31,18 @@ module Shodanz
         @internet = Async::HTTP::Internet.new
         self.key  = key
 
-        warn 'No key has been found or provided!' unless self.key?
+        warn 'No key has been found or provided!' unless key?
       end
 
       # Check if there's an API key.
       def key?
         return true if @key; false
+
       end
 
-      # This stream provides ALL of the data that Shodan collects. 
-      # Use this stream if you need access to everything and/ or want to 
-      # store your own Shodan database locally. If you only care about specific 
+      # This stream provides ALL of the data that Shodan collects.
+      # Use this stream if you need access to everything and/ or want to
+      # store your own Shodan database locally. If you only care about specific
       # ports, please use the Ports stream.
       #
       # Sometimes data may be piped down stream that is weird to parse. You can choose
@@ -57,10 +59,10 @@ module Shodanz
         end
       end
 
-      # This stream provides a filtered, bandwidth-saving view of the Banners 
+      # This stream provides a filtered, bandwidth-saving view of the Banners
       # stream in case you are only interested in devices located in certain ASNs.
       # == Example
-      #   api.banners_within_asns(3303, 32475) do |data| 
+      #   api.banners_within_asns(3303, 32475) do |data|
       #     # do something with the banner hash
       #     puts data
       #   end
@@ -70,10 +72,10 @@ module Shodanz
         end
       end
 
-      # This stream provides a filtered, bandwidth-saving view of the Banners 
+      # This stream provides a filtered, bandwidth-saving view of the Banners
       # stream in case you are only interested in devices located in a certain ASN.
       # == Example
-      #   api.banners_within_asn(3303) do |data| 
+      #   api.banners_within_asn(3303) do |data|
       #     # do something with the banner hash
       #     puts data
       #   end
@@ -83,11 +85,11 @@ module Shodanz
         end
       end
 
-      # Only returns banner data for the list of specified ports. This 
-      # stream provides a filtered, bandwidth-saving view of the Banners 
+      # Only returns banner data for the list of specified ports. This
+      # stream provides a filtered, bandwidth-saving view of the Banners
       # stream in case you are only interested in a specific list of ports.
       # == Example
-      #   api.banners_within_countries("US","DE","JP") do |data| 
+      #   api.banners_within_countries("US","DE","JP") do |data|
       #     # do something with the banner hash
       #     puts data
       #   end
@@ -97,12 +99,12 @@ module Shodanz
         end
       end
 
-      # Only returns banner data for the list of specified ports. This 
-      # stream provides a filtered, bandwidth-saving view of the 
-      # Banners stream in case you are only interested in a 
+      # Only returns banner data for the list of specified ports. This
+      # stream provides a filtered, bandwidth-saving view of the
+      # Banners stream in case you are only interested in a
       # specific list of ports.
       # == Example
-      #   api.banners_on_port(80, 443) do |data| 
+      #   api.banners_on_port(80, 443) do |data|
       #     # do something with the banner hash
       #     puts data
       #   end
@@ -112,9 +114,9 @@ module Shodanz
         end
       end
 
-      # Only returns banner data for a specific port. This 
-      # stream provides a filtered, bandwidth-saving view of the 
-      # Banners stream in case you are only interested in a 
+      # Only returns banner data for a specific port. This
+      # stream provides a filtered, bandwidth-saving view of the
+      # Banners stream in case you are only interested in a
       # specific list of ports.
       # == Example
       #   api.banners_on_port(80) do |banner|
@@ -128,7 +130,7 @@ module Shodanz
       end
 
       # Subscribe to banners discovered on all IP ranges described in the network alerts.
-      # Use the REST API methods to create/ delete/ manage your network alerts and 
+      # Use the REST API methods to create/ delete/ manage your network alerts and
       # use the Streaming API to subscribe to them.
       def alerts
         slurp_stream('alert') do |data|
@@ -142,7 +144,6 @@ module Shodanz
           yield data
         end
       end
-
     end
   end
 end
