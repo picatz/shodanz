@@ -39,15 +39,38 @@ module Shodanz
         end
       end
 
+      def turn_into_query(params)
+        filters = params.reject { |key, _| key == :query }
+        filters.each do |key, value|
+          params[:query] << " #{key}:#{value}"
+        end
+        params.select { |key, _| key == :query }
+      end
+
+      def turn_into_facets(facets)
+        return {} if facets.nil?
+
+        filters = facets.reject { |key, _| key == :facets }
+        facets[:facets] = []
+        filters.each do |key, value|
+          facets[:facets] << "#{key}:#{value}"
+        end
+        facets[:facets] = facets[:facets].join(',')
+        facets.select { |key, _| key == :facets }
+      end
+
       private
 
       RATELIMIT = 'rate limit reached'
       NOINFO    = 'no information available'
+      NOQUERY   = 'empty search query'
 
       def handle_any_json_errors(json)
         return json unless json.is_a?(Hash) && json.key?('error')
-        raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT)
-        raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO)
+
+        raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
+        raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
+        raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
 
         json
       end
