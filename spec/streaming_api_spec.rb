@@ -5,6 +5,11 @@ RSpec.describe Shodanz::API::Streaming do
     @client = Shodanz.api.streaming.new
   end
 
+  before(:each) do
+    # try to avoid rate limit
+    sleep 1
+  end
+
   describe '#banners' do
     def check
       @client.banners(limit: 1) do |banner|
