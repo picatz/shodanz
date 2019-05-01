@@ -4,7 +4,7 @@ require 'shodanz'
 
 client = Shodanz.client.new
 
-webservers = ['apache', 'nginx', 'caddy', 'lighttpd', 'cherokee'] 
+webservers = ['apache', 'nginx', 'caddy', 'lighttpd', 'cherokee']
 
 # we can use methods sequentially
 started = Time.now.sec
