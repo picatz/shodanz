@@ -2,6 +2,8 @@
 
 require 'json'
 require 'async'
+require 'async/rest/resource'
+require 'async/rest/representation'
 require 'async/http/internet'
 require 'shodanz/version'
 require 'shodanz/errors'
