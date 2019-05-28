@@ -1,8 +1,21 @@
-# frozen_string_literal: true
-
-require_relative 'utils.rb'
-
 # fronzen_string_literal: true
+
+# ensure we're not symbolizing keys
+# TODO: figure out how to make this better by NOT monkey-patching
+# async-rest under the hood ...
+module Async
+  module REST
+    module Wrapper
+      class JSON
+        class Parser < HTTP::Body::Wrapper
+          def join
+            ::JSON.parse(super, symbolize_names: false)
+          end
+        end
+      end
+    end
+  end
+end
 
 module Shodanz
   module API
@@ -14,16 +27,28 @@ module Shodanz
     module Utils
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
-        return sync_get(path, params) unless Async::Task.current?
+        params = params.transform_keys(&:to_sym)
 
-        async_get(path, params)
+        params[:key] = @key
+
+        task = Async::REST::Resource.for(@url) do |resource|
+          handle_any_json_errors(resource.with(path: path, parameters: params).get.value)
+        end
+
+        task.wait unless Async::Task.current?
       end
 
       # Perform a direct POST HTTP request to the REST API.
       def post(path, **params)
-        return sync_post(path, params) unless Async::Task.current?
+        params = params.transform_keys(&:to_sym)
 
-        async_post(path, params)
+        params[:key] = @key
+
+        task = Async::REST::Resource.for(@url) do |resource|
+          handle_any_json_errors(resource.with(path: path, parameters: params).post.value)
+        end
+
+        task.wait unless Async::Task.current?
       end
 
       # Perform the main function of consuming the streaming API.
@@ -75,41 +100,6 @@ module Shodanz
         json
       end
 
-      def getter(path, **params)
-        # param keys should all be strings
-        params = params.transform_keys(&:to_s)
-        # build up url string based on special params
-        url = "#{@url}#{path}?key=#{@key}"
-        # special params
-        %w[query ips hostnames].each do |param|
-          if (value = params.delete(param))
-            url += "&#{param}=#{value}"
-          end
-        end
-        resp = @internet.get(url)
-
-        # parse all lines in the response body as JSON
-        json = JSON.parse(resp.body.join)
-
-        handle_any_json_errors(json)
-      ensure
-        resp&.close
-      end
-
-      def poster(path, **params)
-        # param keys should all be strings
-        params = params.transform_keys(&:to_s)
-        # make POST request to server
-        resp = @internet.post("#{@url}#{path}?key=#{@key}", params)
-
-        # parse all lines in the response body as JSON
-        json = JSON.parse(resp.body.join)
-
-        handle_any_json_errors(json)
-      ensure
-        resp&.close
-      end
-
       def slurper(path, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
@@ -133,30 +123,6 @@ module Shodanz
         end
       ensure
         resp&.close
-      end
-
-      def async_get(path, **params)
-        Async::Task.current.async do
-          getter(path, params)
-        end
-      end
-
-      def sync_get(path, **params)
-        Async do
-          getter(path, params)
-        end.wait
-      end
-
-      def async_post(path, **params)
-        Async::Task.current.async do
-          poster(path, params)
-        end
-      end
-
-      def sync_post(path, **params)
-        Async do
-          poster(path, params)
-        end.wait
       end
 
       def async_slurp_stream(path, **params)
