@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'async'
 require 'shodanz'
@@ -12,7 +14,7 @@ client.streaming_api.banners do |banner|
     rescue Shodanz::Errors::RateLimited
       sleep rand
       retry
-    rescue # any other errors
+    rescue StandardError # any other errors
       next
     end
   end
