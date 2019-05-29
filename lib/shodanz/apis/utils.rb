@@ -1,22 +1,5 @@
 # fronzen_string_literal: true
 
-# ensure we're not symbolizing keys
-# TODO: figure out how to make this better by NOT monkey-patching
-# async-rest under the hood ...
-module Async
-  module REST
-    module Wrapper
-      class JSON
-        class Parser < HTTP::Body::Wrapper
-          def join
-            ::JSON.parse(super, symbolize_names: false)
-          end
-        end
-      end
-    end
-  end
-end
-
 module Shodanz
   module API
     # Utils provides simply get, post, and slurp_stream functionality
@@ -25,6 +8,23 @@ module Shodanz
     #
     # @author Kent 'picat' Gruber
     module Utils
+      # Response ensures the parsed JSON body doesn't use symbols for key names.
+      class Response < Async::REST::Representation
+        class Parser < Protocol::HTTP::Body::Wrapper
+					def join
+						::JSON.parse(super, symbolize_names: false)
+					end
+				end
+
+        def process_response(request, response)
+          if body = response.body
+            response.body = Parser.new(body)
+          end
+
+          return response
+        end
+      end
+
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
         params = params.transform_keys(&:to_sym)
@@ -32,7 +32,7 @@ module Shodanz
         params[:key] = @key
 
         task = Async::REST::Resource.for(@url) do |resource|
-          handle_any_json_errors(resource.with(path: path, parameters: params).get.value)
+          handle_any_json_errors(resource.with(path: path, parameters: params).get(Response).value)
         end
 
         task.wait unless Async::Task.current?
@@ -45,7 +45,7 @@ module Shodanz
         params[:key] = @key
 
         task = Async::REST::Resource.for(@url) do |resource|
-          handle_any_json_errors(resource.with(path: path, parameters: params).post.value)
+          handle_any_json_errors(resource.with(path: path, parameters: params).post(Response).value)
         end
 
         task.wait unless Async::Task.current?
