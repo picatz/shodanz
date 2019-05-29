@@ -11,10 +11,10 @@ module Shodanz
       # Response ensures the parsed JSON body doesn't use symbols for key names.
       class Response < Async::REST::Representation
         class Parser < Protocol::HTTP::Body::Wrapper
-					def join
-						::JSON.parse(super, symbolize_names: false)
-					end
-				end
+          def join
+            ::JSON.parse(super, symbolize_names: false)
+          end
+        end
 
         def process_response(request, response)
           if body = response.body
