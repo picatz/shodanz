@@ -19,10 +19,10 @@ module Shodanz
               warn "Unknown content type: #{content_type}!"
             end
           end
-          
+
           return response
         end
-        
+
         class Parser < ::Protocol::HTTP::Body::Wrapper
           def join
             ::JSON.parse(super, symbolize_names: false)
@@ -86,7 +86,7 @@ module Shodanz
           return value
         end
       end
-      
+
       def [] key
         if hash = to_hash
           hash[key.to_sym]

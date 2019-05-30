@@ -8,13 +8,13 @@ RSpec.describe Shodanz::API::REST do
 
   describe '#info' do
     include_context Async::RSpec::Reactor
-    
+
     after do
       subject.close
     end
-    
+
     let(:info) {subject.info}
-    
+
     it 'returns info about the underlying token' do
       expect(info).to be_a Hash
       expect(info).to include("scan_credits", "usage_limits")

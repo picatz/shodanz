@@ -25,12 +25,12 @@ module Shodanz
   def self.client
     Client
   end
-  
+
   def self.connect(**options)
     client = API::Rest.new(**options)
-    
+
     return client unless block_given?
-    
+
     begin
       Async do
         yield client
