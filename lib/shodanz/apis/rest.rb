@@ -4,19 +4,6 @@ require_relative 'representation'
 
 module Shodanz
   module API
-    class Host < Representation
-    end
-    
-    class Hosts < Representation
-      def representation
-        Host
-      end
-      
-      def find_by_ip(ip, **parameters)
-        representation.new(@resource.with(path: ip, parameters: parameters))
-      end
-    end
-    
     # The REST API provides methods to search Shodan, look up
     # hosts, get summary information on queries and a variety
     # of other utilities. This requires you to have an API key
