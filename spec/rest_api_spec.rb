@@ -2,34 +2,22 @@ require "spec_helper"
 
 RSpec.describe Shodanz::API::REST do
   before do
-    @client = Shodanz.api.rest.new
-  end
-
-  before(:each) do
     # try to avoid rate limit
     sleep 1
   end
 
   describe '#info' do
-    def check
-      if Async::Task.current?
-        resp = @client.info.wait
-      else
-        resp = @client.info
-      end
-      expect(resp).to be_a(Hash)
+    include_context Async::RSpec::Reactor
+    
+    after do
+      subject.close
     end
-
-    describe 'returns info about the underlying token' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    
+    let(:info) {subject.info}
+    
+    it 'returns info about the underlying token' do
+      expect(info).to be_a Hash
+      expect(info).to include("scan_credits", "usage_limits")
     end
   end
 
@@ -38,9 +26,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host(ip).wait
+        resp = subject.host(ip).wait
       else
-        resp = @client.host(ip)
+        resp = subject.host(ip)
       end
       expect(resp).to be_a(Hash)
     end
@@ -63,9 +51,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host_count(query).wait
+        resp = subject.host_count(query).wait
       else
-        resp = @client.host_count(query)
+        resp = subject.host_count(query)
       end
       expect(resp).to be_a(Hash)
     end
@@ -88,9 +76,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host_search(query).wait
+        resp = subject.host_search(query).wait
       else
-        resp = @client.host_search(query)
+        resp = subject.host_search(query)
       end
       expect(resp).to be_a(Hash)
     end
@@ -113,9 +101,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.host_search_tokens(query).wait
+        resp = subject.host_search_tokens(query).wait
       else
-        resp = @client.host_search_tokens(query)
+        resp = subject.host_search_tokens(query)
       end
       expect(resp).to be_a(Hash)
       expect(resp['attributes']).to be_a(Hash)
@@ -141,9 +129,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#ports' do
     def check
       if Async::Task.current?
-        resp = @client.ports.wait
+        resp = subject.ports.wait
       else
-        resp = @client.ports
+        resp = subject.ports
       end
       expect(resp).to be_a(Array)
     end
@@ -164,9 +152,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#protocols' do
     def check
       if Async::Task.current?
-        resp = @client.protocols.wait
+        resp = subject.protocols.wait
       else
-        resp = @client.protocols
+        resp = subject.protocols
       end
       expect(resp).to be_a(Hash)
     end
@@ -187,9 +175,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#profile' do
     def check
       if Async::Task.current?
-        resp = @client.profile.wait
+        resp = subject.profile.wait
       else
-        resp = @client.profile
+        resp = subject.profile
       end
       expect(resp).to be_a(Hash)
       expect(resp["member"]).to be(true).or be(false)
@@ -214,9 +202,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#community_queries' do
     def check
       if Async::Task.current?
-        resp = @client.community_queries.wait
+        resp = subject.community_queries.wait
       else
-        resp = @client.community_queries
+        resp = subject.community_queries
       end
       expect(resp).to be_a(Hash)
       expect(resp['total']).to be_a(Integer)
@@ -250,9 +238,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.search_for_community_query(query).wait
+        resp = subject.search_for_community_query(query).wait
       else
-        resp = @client.search_for_community_query(query)
+        resp = subject.search_for_community_query(query)
       end
       expect(resp).to be_a(Hash)
       expect(resp['total']).to be_a(Integer)
@@ -286,9 +274,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.resolve(hostname).wait
+        resp = subject.resolve(hostname).wait
       else
-        resp = @client.resolve(hostname)
+        resp = subject.resolve(hostname)
       end
       expect(resp).to be_a(Hash)
     end
@@ -311,9 +299,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.reverse_lookup(ip).wait
+        resp = subject.reverse_lookup(ip).wait
       else
-        resp = @client.reverse_lookup(ip)
+        resp = subject.reverse_lookup(ip)
       end
       expect(resp).to be_a(Hash)
       expect(resp[ip]).to be_a(Array)
@@ -336,9 +324,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#http_headers' do
     def check
       if Async::Task.current?
-        resp = @client.http_headers.wait
+        resp = subject.http_headers.wait
       else
-        resp = @client.http_headers
+        resp = subject.http_headers
       end
       expect(resp).to be_a(Hash)
       # TODO figure out why there are two content length headers?
@@ -369,9 +357,9 @@ RSpec.describe Shodanz::API::REST do
   describe '#my_ip' do
     def check
       if Async::Task.current?
-        resp = @client.my_ip.wait
+        resp = subject.my_ip.wait
       else
-        resp = @client.my_ip
+        resp = subject.my_ip
       end
       expect(resp).to be_a(String)
     end
@@ -394,9 +382,9 @@ RSpec.describe Shodanz::API::REST do
 
     def check
       if Async::Task.current?
-        resp = @client.honeypot_score(ip).wait
+        resp = subject.honeypot_score(ip).wait
       else
-        resp = @client.honeypot_score(ip)
+        resp = subject.honeypot_score(ip)
       end
       expect(resp).to be_a(Float)
       expect(resp).to eq(0.0)

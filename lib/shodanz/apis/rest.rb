@@ -1,38 +1,53 @@
-require_relative 'utils.rb'
-
 # frozen_string_literal: true
+
+require_relative 'representation'
 
 module Shodanz
   module API
+    class Host < Representation
+    end
+    
+    class Hosts < Representation
+      def representation
+        Host
+      end
+      
+      def find_by_ip(ip, **parameters)
+        representation.new(@resource.with(path: ip, parameters: parameters))
+      end
+    end
+    
     # The REST API provides methods to search Shodan, look up
     # hosts, get summary information on queries and a variety
     # of other utilities. This requires you to have an API key
     # which you can get from Shodan.
     #
     # @author Kent 'picat' Gruber
-    class REST
-      include Shodanz::API::Utils
-
-      # @return [String]
-      attr_accessor :key
-
+    class REST < Representation
       # The path to the REST API endpoint.
-      URL = 'https://api.shodan.io/'
+      DEFAULT_URL = 'https://api.shodan.io/'
 
       # @param key [String] SHODAN API key, defaulted to the *SHODAN_API_KEY* enviroment variable.
-      def initialize(key: ENV['SHODAN_API_KEY'])
-        @url      = URL
-        @internet = Async::HTTP::Internet.new
-        self.key  = key
+      def initialize(resource = nil, key: ENV['SHODAN_API_KEY'], metadata: {}, value: nil, wrapper: Wrapper::JSON.new)
+        # This is a little bit of a hack to support `REST.new` with no arguments.
+        if resource.nil?
+          reference = ::Protocol::HTTP::Reference.parse(DEFAULT_URL, key: key)
+          resource = Async::REST::Resource.for(reference)
+        end
 
-        warn 'No key has been found or provided!' unless key?
+        super(resource, metadata: metadata, value: value, wrapper: wrapper)
       end
 
-      # Check if there's an API key.
-      def key?
-        return true if @key
+      def turn_into_query(params)
+        filters = params.reject { |key, _| key == :query }
+        filters.each do |key, value|
+          params[:query] << " #{key}:#{value}"
+        end
+        params.select { |key, _| key == :query }
+      end
 
-        false
+      def hosts
+        Hosts.new(@resource.with(path: 'shodan/host/'))
       end
 
       # Returns all services that have been found on the given host IP.
@@ -48,8 +63,10 @@ module Shodanz
       #
       #   # Only return the list of ports and the general host information, no banners.
       #   rest_api.host("8.8.8.8", minify: true)
-      def host(ip, **params)
-        get("shodan/host/#{ip}", params)
+      def host(ip, **parameters)
+        async do
+          hosts.find_by_ip(ip, parameters).value
+        end
       end
 
       # This method behaves identical to "/shodan/host/search" with the only
@@ -66,7 +83,7 @@ module Shodanz
         params[:query] = query
         params = turn_into_query(params)
         facets = turn_into_facets(facets)
-        get('shodan/host/count', params.merge(facets))
+        get_value('shodan/host/count', params.merge(facets))
       end
 
       # Search Shodan using the same query syntax as the website and use facets
@@ -79,7 +96,7 @@ module Shodanz
         facets = turn_into_facets(facets)
         params[:page] = page
         params[:minify] = minify
-        get('shodan/host/search', params.merge(facets))
+        get_value('shodan/host/search', params.merge(facets))
       end
 
       # This method lets you determine which filters are being used by
@@ -87,17 +104,17 @@ module Shodanz
       def host_search_tokens(query = '', **params)
         params[:query] = query
         params = turn_into_query(params)
-        get('shodan/host/search/tokens', params)
+        get_value('shodan/host/search/tokens', params)
       end
 
       # This method returns a list of port numbers that the crawlers are looking for.
       def ports
-        get('shodan/ports')
+        get_value('shodan/ports')
       end
 
       # List all protocols that can be used when performing on-demand Internet scans via Shodan.
       def protocols
-        get('shodan/protocols')
+        get_value('shodan/protocols')
       end
 
       # Use this method to request Shodan to crawl a network.
@@ -128,64 +145,99 @@ module Shodanz
 
       # Check the progress of a previously submitted scan request.
       def scan_status(id)
-        get("shodan/scan/#{id}")
+        get_value("shodan/scan/#{id}")
       end
 
       # Use this method to obtain a list of search queries that users have saved in Shodan.
       def community_queries(**params)
-        get('shodan/query', params)
+        get_value('shodan/query', params)
       end
 
       # Use this method to search the directory of search queries that users have saved in Shodan.
       def search_for_community_query(query, **params)
         params[:query] = query
         params = turn_into_query(params)
-        get('shodan/query/search', params)
+        get_value('shodan/query/search', params)
       end
 
       # Use this method to obtain a list of popular tags for the saved search queries in Shodan.
       def popular_query_tags(size = 10)
         params = {}
         params[:size] = size
-        get('shodan/query/tags', params)
+        get_value('shodan/query/tags', params)
       end
 
       # Returns information about the Shodan account linked to this API key.
       def profile
-        get('account/profile')
+        get_value('account/profile')
       end
 
       # Look up the IP address for the provided list of hostnames.
       def resolve(*hostnames)
-        get('dns/resolve', hostnames: hostnames.join(','))
+        get_value('dns/resolve', hostnames: hostnames.join(','))
       end
 
       # Look up the hostnames that have been defined for the
       # given list of IP addresses.
       def reverse_lookup(*ips)
-        get('dns/reverse', ips: ips.join(','))
+        get_value('dns/reverse', ips: ips.join(','))
       end
 
       # Shows the HTTP headers that your client sends when
       # connecting to a webserver.
       def http_headers
-        get('tools/httpheaders')
+        get_value('tools/httpheaders')
       end
 
       # Get your current IP address as seen from the Internet.
       def my_ip
-        get('tools/myip')
+        get_value('tools/myip')
       end
 
       # Calculates a honeypot probability score ranging
       # from 0 (not a honeypot) to 1.0 (is a honeypot).
       def honeypot_score(ip)
-        get("labs/honeyscore/#{ip}")
+        get_value("labs/honeyscore/#{ip}")
       end
 
       # Returns information about the API plan belonging to the given API key.
       def info
-        get('api-info')
+        get_value('api-info')
+      end
+
+      private
+
+      def turn_into_facets(facets)
+        return {} if facets.nil?
+
+        filters = facets.reject { |key, _| key == :facets }
+        facets[:facets] = []
+        filters.each do |key, value|
+          facets[:facets] << "#{key}:#{value}"
+        end
+        facets[:facets] = facets[:facets].join(',')
+        facets.select { |key, _| key == :facets }
+      end
+
+      def get_value(path, parameters = nil)
+        async do
+          Representation.new(@resource.with(path: path, parameters: parameters), wrapper: @wrapper).value
+        end
+      end
+
+      # In the case the user has an async block, connection will be scoped to that block. Otherwise we open a connection and close it after the request is done.
+      def async(&block)
+        if task = Async::Task.current?
+          yield
+        else
+          Async do
+            result = yield
+            
+            self.close
+            
+            result
+          end.wait
+        end
       end
     end
   end
