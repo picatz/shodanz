@@ -11,6 +11,8 @@ module Shodanz
     #
     # @author Kent 'picat' Gruber
     class REST < Representation
+      include Shodanz::API::Utils
+
       # The path to the REST API endpoint.
       DEFAULT_URL = 'https://api.shodan.io/'
 
@@ -33,8 +35,17 @@ module Shodanz
         params.select { |key, _| key == :query }
       end
 
-      def hosts
-        Hosts.new(@resource.with(path: 'shodan/host/'))
+      def hosts(ips, **parameters)
+        async do
+          ips.each do |ip|
+            Async do
+              h = host(ip)
+              yield h if block_given?
+              hosts << h
+            end
+          end
+        end
+        return hosts
       end
 
       # Returns all services that have been found on the given host IP.
@@ -51,9 +62,7 @@ module Shodanz
       #   # Only return the list of ports and the general host information, no banners.
       #   rest_api.host("8.8.8.8", minify: true)
       def host(ip, **parameters)
-        async do
-          hosts.find_by_ip(ip, parameters).value
-        end
+        get_value("/shodan/host/#{ip}", parameters)
       end
 
       # This method behaves identical to "/shodan/host/search" with the only
@@ -190,41 +199,6 @@ module Shodanz
       # Returns information about the API plan belonging to the given API key.
       def info
         get_value('api-info')
-      end
-
-      private
-
-      def turn_into_facets(facets)
-        return {} if facets.nil?
-
-        filters = facets.reject { |key, _| key == :facets }
-        facets[:facets] = []
-        filters.each do |key, value|
-          facets[:facets] << "#{key}:#{value}"
-        end
-        facets[:facets] = facets[:facets].join(',')
-        facets.select { |key, _| key == :facets }
-      end
-
-      def get_value(path, parameters = nil)
-        async do
-          Representation.new(@resource.with(path: path, parameters: parameters), wrapper: @wrapper).value
-        end
-      end
-
-      # In the case the user has an async block, connection will be scoped to that block. Otherwise we open a connection and close it after the request is done.
-      def async(&block)
-        if task = Async::Task.current?
-          yield
-        else
-          Async do
-            result = yield
-            
-            self.close
-            
-            result
-          end.wait
-        end
       end
     end
   end
