@@ -16,8 +16,6 @@ module Shodanz
     #
     # @author Kent 'picat' Gruber
     class Streaming
-      include Shodanz::API::Utils
-
       # @return [String]
       attr_accessor :key
 
@@ -143,6 +141,58 @@ module Shodanz
         slurp_stream("alert/#{id}") do |data|
           yield data
         end
+      end
+
+      private
+
+      # Perform the main function of consuming the streaming API.
+      def slurp_stream(path, **params)
+        if Async::Task.current?
+          async_slurp_stream(path, params) do |result|
+            yield result
+          end
+        else
+          sync_slurp_stream(path, params) do |result|
+            yield result
+          end
+        end
+      end
+
+      def slurper(path, **params)
+        # param keys should all be strings
+        params = params.transform_keys(&:to_s)
+        # check if limit
+        if (limit = params.delete('limit'))
+          counter = 0
+        end
+        # make GET request to server
+        resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
+        # read body line-by-line
+        until resp.body.nil? || resp.body.empty?
+          resp.body.read.each_line do |line|
+            next if line.strip.empty?
+
+            yield JSON.parse(line)
+            if limit
+              counter += 1
+              resp.close if counter == limit
+            end
+          end
+        end
+      ensure
+        resp&.close
+      end
+
+      def async_slurp_stream(path, **params)
+        Async::Task.current.async do
+          slurper(path, params) { |data| yield data }
+        end
+      end
+
+      def sync_slurp_stream(path, **params)
+        Async do
+          slurper(path, params) { |data| yield data }
+        end.wait
       end
     end
   end
