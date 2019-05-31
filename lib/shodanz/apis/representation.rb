@@ -20,7 +20,7 @@ module Shodanz
             end
           end
 
-          return response
+          response
         end
 
         class Parser < ::Protocol::HTTP::Body::Wrapper
