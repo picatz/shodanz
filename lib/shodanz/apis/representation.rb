@@ -35,9 +35,9 @@ module Shodanz
     #
     # @author Samuel Williams
     class Representation < Async::REST::Representation
-      RATELIMIT = /rate limit reached/i
-      NOINFO = /no information available/i
-      NOQUERY = /empty search query/i
+      RATELIMIT = /rate limit reached/i.freeze
+      NOINFO = /no information available/i.freeze
+      NOQUERY = /empty search query/i.freeze
 
       # Check if there's an API key.
       def key?
