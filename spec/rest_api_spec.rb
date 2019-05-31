@@ -1,4 +1,6 @@
-require "spec_helper"
+# frozen_string_literal: true
+
+require 'spec_helper'
 
 RSpec.describe Shodanz::API::REST do
   before do
@@ -13,11 +15,11 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:info) {subject.info}
+    let(:info) { subject.info }
 
     it 'returns info about the underlying token' do
       expect(info).to be_a Hash
-      expect(info).to include("scan_credits", "usage_limits")
+      expect(info).to include('scan_credits', 'usage_limits')
     end
   end
 
@@ -28,7 +30,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:resp) { subject.host("8.8.8.8") }
+    let(:resp) { subject.host('8.8.8.8') }
 
     it 'returns all services that have been found on the given host IP' do
       expect(resp).to be_a(Hash)
@@ -42,7 +44,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:resp) { subject.host_count("apache") }
+    let(:resp) { subject.host_count('apache') }
 
     it 'returns the total number of results that matches a given query' do
       expect(resp).to be_a(Hash)
@@ -56,7 +58,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:resp) { subject.host_search("apache") }
+    let(:resp) { subject.host_search('apache') }
 
     it 'returns the total number of results that matches a given query' do
       expect(resp).to be_a(Hash)
@@ -70,7 +72,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:query) { "apache" }
+    let(:query) { 'apache' }
 
     let(:resp) { subject.host_search_tokens(query) }
 
@@ -123,10 +125,10 @@ RSpec.describe Shodanz::API::REST do
 
     it 'returns information about the shodan account' do
       expect(resp).to be_a(Hash)
-      expect(resp["member"]).to be(true).or be(false)
-      expect(resp["credits"]).to be_a(Integer)
-      expect(resp["created"]).to be_a(String)
-      expect(resp.key?("display_name")).to be(true)
+      expect(resp['member']).to be(true).or be(false)
+      expect(resp['credits']).to be_a(Integer)
+      expect(resp['created']).to be_a(String)
+      expect(resp.key?('display_name')).to be(true)
     end
   end
 
@@ -162,7 +164,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:resp) { subject.search_for_community_query("apache") }
+    let(:resp) { subject.search_for_community_query('apache') }
 
     it 'search the directory of search queries that users have saved' do
       expect(resp).to be_a(Hash)
@@ -187,7 +189,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:resp) { subject.resolve("google.com") }
+    let(:resp) { subject.resolve('google.com') }
 
     it 'resolves domains to ip addresses' do
       expect(resp).to be_a(Hash)
@@ -201,7 +203,7 @@ RSpec.describe Shodanz::API::REST do
       subject.close
     end
 
-    let(:ip) { "8.8.8.8" }
+    let(:ip) { '8.8.8.8' }
 
     let(:resp) { subject.reverse_lookup(ip) }
 
@@ -223,12 +225,12 @@ RSpec.describe Shodanz::API::REST do
 
     it 'shows the HTTP headers that your client sends when connecting to a webserver' do
       expect(resp).to be_a(Hash)
-      # TODO figure out why there are two content length headers?
+      # TODO: figure out why there are two content length headers?
       expect(resp['Content_Length']).to be_a(String)
       expect(resp['Content_Length']).to eq('0')
       expect(resp['Content-Length']).to be_a(String)
       expect(resp['Content-Length']).to eq('0')
-      # TODO maybe specify a content-type?
+      # TODO: maybe specify a content-type?
       expect(resp['Content-Type']).to be_a(String)
       expect(resp['Content-Type']).to eq('')
       expect(resp['Host']).to be_a(String)
