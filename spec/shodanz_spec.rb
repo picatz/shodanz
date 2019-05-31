@@ -1,7 +1,9 @@
-require "spec_helper"
+# frozen_string_literal: true
+
+require 'spec_helper'
 
 RSpec.describe Shodanz do
-  it "has a version number" do
+  it 'has a version number' do
     expect(Shodanz::VERSION).not_to be nil
   end
 end
