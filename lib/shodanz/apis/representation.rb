@@ -49,7 +49,7 @@ module Shodanz
 
         message = super
 
-        if message.is_a?(Hash) and error = message['error']
+        if message.is_a?(Hash) && (error = message['error'])
           case error
           when RATELIMIT
             raise Shodanz::Errors::RateLimited, error
@@ -62,7 +62,7 @@ module Shodanz
           end
         end
 
-        return message
+        message
       end
 
       def representation
@@ -80,15 +80,13 @@ module Shodanz
       end
 
       def to_hash
-        if value.is_a?(Hash)
-          return value
-        end
+        return value if value.is_a?(Hash)
       end
 
-      def [] key
-        if hash = to_hash
-          hash[key.to_sym]
-        end
+      def [](key)
+        return nil unless value.is_a?(Hash)
+
+        to_hash[key.to_sym]
       end
     end
   end
