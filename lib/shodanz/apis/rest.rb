@@ -39,7 +39,7 @@ module Shodanz
         async do
           ips.each do |ip|
             Async do
-              h = host(ip)
+              h = host(ip, parameters)
               yield h if block_given?
               hosts << h
             end
