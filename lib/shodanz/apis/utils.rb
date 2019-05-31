@@ -34,7 +34,7 @@ module Shodanz
           Async do
             result = yield
 
-            self.close
+            close
 
             result
           end.wait
