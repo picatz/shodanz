@@ -9,7 +9,7 @@ module Shodanz
   module API
     module Wrapper
       class JSON < Async::REST::Wrapper::JSON
-        def process_response(request, response)
+        def process_response(_request, response)
           if content_type = response.headers['content-type']
             if content_type.start_with? @content_type
               if body = response.body
