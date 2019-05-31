@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'apis/utils.rb'
 require_relative 'apis/rest.rb'
 require_relative 'apis/streaming.rb'
