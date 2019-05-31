@@ -28,7 +28,7 @@ module Shodanz
       end
 
       def async(&block)
-        if task = Async::Task.current?
+        if Async::Task.current?
           yield
         else
           Async do
