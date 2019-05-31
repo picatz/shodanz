@@ -45,7 +45,7 @@ module Shodanz
             end
           end
         end
-        return hosts
+        hosts
       end
 
       # Returns all services that have been found on the given host IP.
