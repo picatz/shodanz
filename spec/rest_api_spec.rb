@@ -22,89 +22,59 @@ RSpec.describe Shodanz::API::REST do
   end
 
   describe '#host' do
-    let(:ip) { "8.8.8.8" }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.host(ip).wait
-      else
-        resp = subject.host(ip)
-      end
-      expect(resp).to be_a(Hash)
+    after do
+      subject.close
     end
 
-    describe 'returns all services that have been found on the given host IP' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.host("8.8.8.8") }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'returns all services that have been found on the given host IP' do
+      expect(resp).to be_a(Hash)
     end
   end
 
   describe '#host_count' do
-    let(:query) { "apache" }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.host_count(query).wait
-      else
-        resp = subject.host_count(query)
-      end
-      expect(resp).to be_a(Hash)
+    after do
+      subject.close
     end
 
-    describe 'returns the total number of results that matches a given query' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.host_count("apache") }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'returns the total number of results that matches a given query' do
+      expect(resp).to be_a(Hash)
     end
   end
 
   describe '#host_search' do
-    let(:query) { "apache" }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.host_search(query).wait
-      else
-        resp = subject.host_search(query)
-      end
-      expect(resp).to be_a(Hash)
+    after do
+      subject.close
     end
 
-    describe 'returns the total number of results that matches a given query' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.host_search("apache") }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'returns the total number of results that matches a given query' do
+      expect(resp).to be_a(Hash)
     end
   end
 
   describe '#host_search_tokens' do
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
+    end
+
     let(:query) { "apache" }
 
-    def check
-      if Async::Task.current?
-        resp = subject.host_search_tokens(query).wait
-      else
-        resp = subject.host_search_tokens(query)
-      end
+    let(:resp) { subject.host_search_tokens(query) }
+
+    it 'returns a parsed version of the query' do
       expect(resp).to be_a(Hash)
       expect(resp['attributes']).to be_a(Hash)
       expect(resp['errors']).to be_a(Array)
@@ -112,100 +82,64 @@ RSpec.describe Shodanz::API::REST do
       expect(resp['string']).to be_a(String)
       expect(resp['string']).to eq(query)
     end
-
-    describe 'returns a parsed version of the query' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
 
   describe '#ports' do
-    def check
-      if Async::Task.current?
-        resp = subject.ports.wait
-      else
-        resp = subject.ports
-      end
-      expect(resp).to be_a(Array)
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
     end
 
-    describe 'returns a list of port numbers that the crawlers are looking for' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.ports }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'returns a list of port numbers that the crawlers are looking for' do
+      expect(resp).to be_a(Array)
     end
   end
 
   describe '#protocols' do
-    def check
-      if Async::Task.current?
-        resp = subject.protocols.wait
-      else
-        resp = subject.protocols
-      end
-      expect(resp).to be_a(Hash)
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
     end
 
-    describe 'returns all protocols that can be used when performing on-demand scans' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.protocols }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'returns all protocols that can be used when performing on-demand scans' do
+      expect(resp).to be_a(Hash)
     end
   end
 
   describe '#profile' do
-    def check
-      if Async::Task.current?
-        resp = subject.profile.wait
-      else
-        resp = subject.profile
-      end
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
+    end
+
+    let(:resp) { subject.profile }
+
+    it 'returns information about the shodan account' do
       expect(resp).to be_a(Hash)
       expect(resp["member"]).to be(true).or be(false)
       expect(resp["credits"]).to be_a(Integer)
       expect(resp["created"]).to be_a(String)
       expect(resp.key?("display_name")).to be(true)
     end
-
-    describe 'returns information about the shodan account' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
 
   describe '#community_queries' do
-    def check
-      if Async::Task.current?
-        resp = subject.community_queries.wait
-      else
-        resp = subject.community_queries
-      end
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
+    end
+
+    let(:resp) { subject.community_queries }
+
+    it 'obtains a list of search queries that users have saved' do
       expect(resp).to be_a(Hash)
       expect(resp['total']).to be_a(Integer)
       expect(resp['matches']).to be_a(Array)
@@ -218,30 +152,19 @@ RSpec.describe Shodanz::API::REST do
       expect(example_match['timestamp']).to be_a(String)
       expect(example_match['title']).to be_a(String)
       expect(example_match['query']).to be_a(String)
-    end
-
-    describe 'obtains a list of search queries that users have saved' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
     end
   end
 
   describe '#search_for_community_query' do
-    let(:query) { "apache" }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.search_for_community_query(query).wait
-      else
-        resp = subject.search_for_community_query(query)
-      end
+    after do
+      subject.close
+    end
+
+    let(:resp) { subject.search_for_community_query("apache") }
+
+    it 'search the directory of search queries that users have saved' do
       expect(resp).to be_a(Hash)
       expect(resp['total']).to be_a(Integer)
       expect(resp['matches']).to be_a(Array)
@@ -255,79 +178,50 @@ RSpec.describe Shodanz::API::REST do
       expect(example_match['title']).to be_a(String)
       expect(example_match['query']).to be_a(String)
     end
-
-    describe 'search the directory of search queries that users have saved' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
 
   describe '#resolve' do
-    let(:hostname) { "google.com" }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.resolve(hostname).wait
-      else
-        resp = subject.resolve(hostname)
-      end
-      expect(resp).to be_a(Hash)
+    after do
+      subject.close
     end
 
-    describe 'resolves domains to ip addresses' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.resolve("google.com") }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'resolves domains to ip addresses' do
+      expect(resp).to be_a(Hash)
     end
   end
 
   describe '#reverse_lookup' do
-    let(:ip) { '8.8.8.8' }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.reverse_lookup(ip).wait
-      else
-        resp = subject.reverse_lookup(ip)
-      end
+    after do
+      subject.close
+    end
+
+    let(:ip) { "8.8.8.8" }
+
+    let(:resp) { subject.reverse_lookup(ip) }
+
+    it 'resolves ip addresses to domains' do
       expect(resp).to be_a(Hash)
       expect(resp[ip]).to be_a(Array)
       expect(resp[ip].first).to eq('google-public-dns-a.google.com')
     end
-
-    describe 'resolves ip addresses to domains' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
 
   describe '#http_headers' do
-    def check
-      if Async::Task.current?
-        resp = subject.http_headers.wait
-      else
-        resp = subject.http_headers
-      end
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
+    end
+
+    let(:resp) { subject.http_headers }
+
+    it 'shows the HTTP headers that your client sends when connecting to a webserver' do
       expect(resp).to be_a(Hash)
       # TODO figure out why there are two content length headers?
       expect(resp['Content_Length']).to be_a(String)
@@ -340,67 +234,34 @@ RSpec.describe Shodanz::API::REST do
       expect(resp['Host']).to be_a(String)
       expect(resp['Host']).to eq('api.shodan.io')
     end
-
-    describe 'shows the HTTP headers that your client sends when connecting to a webserver' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
 
   describe '#my_ip' do
-    def check
-      if Async::Task.current?
-        resp = subject.my_ip.wait
-      else
-        resp = subject.my_ip
-      end
-      expect(resp).to be_a(String)
+    include_context Async::RSpec::Reactor
+
+    after do
+      subject.close
     end
 
-    describe 'shows the current IP address as seen from the internet' do
-      it 'works synchronously' do
-        check
-      end
+    let(:resp) { subject.my_ip }
 
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
+    it 'shows the current IP address as seen from the internet' do
+      expect(resp).to be_a(String)
     end
   end
 
   describe '#honeypot_score' do
-    let(:ip) { '8.8.8.8' }
+    include_context Async::RSpec::Reactor
 
-    def check
-      if Async::Task.current?
-        resp = subject.honeypot_score(ip).wait
-      else
-        resp = subject.honeypot_score(ip)
-      end
+    after do
+      subject.close
+    end
+
+    let(:resp) { subject.honeypot_score('8.8.8.8') }
+
+    it 'returns the calculated likelihood a given IP is a honeypot' do
       expect(resp).to be_a(Float)
       expect(resp).to eq(0.0)
     end
-
-    describe 'returns the calculated likelihood a given IP is a honeypot' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
   end
-
 end
