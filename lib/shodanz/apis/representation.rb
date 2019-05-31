@@ -45,9 +45,7 @@ module Shodanz
       end
 
       def process_response(request, response)
-        unless response.success?
-          raise Shodanz::Errors::Error, response.read
-        end
+        raise Shodanz::Errors::Error, response.read unless response.success?
 
         message = super
 
