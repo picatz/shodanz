@@ -19,9 +19,9 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+    - name: Rspec
       env: 
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
-    - name: Rspec
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
