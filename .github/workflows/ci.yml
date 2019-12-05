@@ -1,9 +1,12 @@
 name: CI
 
 on:
+  member: 
   push:
     branches:
     - master
+  schedule:
+  - cron: "0 9 * * *"
 
 jobs:
   test:
@@ -16,6 +19,8 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+      env: 
+        SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
     - name: Rspec
       run: |
         gem install bundler
