@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'async-http', '>= 0.38.1', '< 0.50.0'
-  spec.add_dependency 'async', '>= 1.17.1', '< 1.24.0'
+  spec.add_dependency 'async', '>= 1.17.1', '< 1.25.0'
 
   spec.add_development_dependency 'async-rspec', '~> 1.13.0'
   spec.add_development_dependency 'bundler', '~> 2.0.2'
