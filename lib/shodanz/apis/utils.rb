@@ -82,7 +82,7 @@ module Shodanz
         url = "#{@url}#{path}?key=#{@key}"
         # special params
         params.each do |param,value|
-          url += "&#{param}=#{value}" unless value.is_a?(Array) && value.empty?
+          url += "&#{param}=#{value}" unless value.is_a?(String) && value.empty?
         end
         resp = @internet.get(url)
 
