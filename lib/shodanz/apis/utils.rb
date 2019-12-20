@@ -81,10 +81,8 @@ module Shodanz
         # build up url string based on special params
         url = "#{@url}#{path}?key=#{@key}"
         # special params
-        %w[query ips hostnames].each do |param|
-          if (value = params.delete(param))
-            url += "&#{param}=#{value}"
-          end
+        params.each do |param,value|
+          url += "&#{param}=#{value}" unless value.is_a?(Array) && value.empty?
         end
         resp = @internet.get(url)
 
