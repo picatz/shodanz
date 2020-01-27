@@ -49,7 +49,7 @@ module Shodanz
       #   # Only return the list of ports and the general host information, no banners.
       #   rest_api.host("8.8.8.8", minify: true)
       def host(ip, **params)
-        get("shodan/host/#{ip}", params)
+        get("shodan/host/#{ip}", **params)
       end
 
       # This method behaves identical to "/shodan/host/search" with the only
@@ -64,9 +64,9 @@ module Shodanz
       #   rest_api.host_count("apache", country: "US", state: "MI", city: "Detroit")
       def host_count(query = '', facets: {}, **params)
         params[:query] = query
-        params = turn_into_query(params)
-        facets = turn_into_facets(facets)
-        get('shodan/host/count', params.merge(facets))
+        params = turn_into_query(**params)
+        facets = turn_into_facets(**facets)
+        get('shodan/host/count', **params.merge(**facets))
       end
 
       # Search Shodan using the same query syntax as the website and use facets
@@ -75,19 +75,19 @@ module Shodanz
       #   rest_api.host_search("apache", country: "US", facets: { city: "Detroit" }, page: 1, minify: false)
       def host_search(query = '', facets: {}, page: 1, minify: true, **params)
         params[:query] = query
-        params = turn_into_query(params)
-        facets = turn_into_facets(facets)
+        params = turn_into_query(**params)
+        facets = turn_into_facets(**facets)
         params[:page] = page
         params[:minify] = minify
-        get('shodan/host/search', params.merge(facets))
+        get('shodan/host/search', **params.merge(**facets))
       end
 
       # This method lets you determine which filters are being used by
       # the query string and what parameters were provided to the filters.
       def host_search_tokens(query = '', **params)
         params[:query] = query
-        params = turn_into_query(params)
-        get('shodan/host/search/tokens', params)
+        params = turn_into_query(**params)
+        get('shodan/host/search/tokens', **params)
       end
 
       # This method returns a list of port numbers that the crawlers are looking for.
@@ -122,8 +122,8 @@ module Shodanz
       #   rest_api.crawl_for(port: 80, protocol: "http")
       def crawl_for(**params)
         params[:query] = ''
-        params = turn_into_query(params)
-        post('shodan/scan/internet', params)
+        params = turn_into_query(**params)
+        post('shodan/scan/internet', **params)
       end
 
       # Check the progress of a previously submitted scan request.
@@ -133,21 +133,21 @@ module Shodanz
 
       # Use this method to obtain a list of search queries that users have saved in Shodan.
       def community_queries(**params)
-        get('shodan/query', params)
+        get('shodan/query', **params)
       end
 
       # Use this method to search the directory of search queries that users have saved in Shodan.
       def search_for_community_query(query, **params)
         params[:query] = query
-        params = turn_into_query(params)
-        get('shodan/query/search', params)
+        params = turn_into_query(**params)
+        get('shodan/query/search', **params)
       end
 
       # Use this method to obtain a list of popular tags for the saved search queries in Shodan.
       def popular_query_tags(size = 10)
         params = {}
         params[:size] = size
-        get('shodan/query/tags', params)
+        get('shodan/query/tags', **params)
       end
 
       # Returns information about the Shodan account linked to this API key.
