@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  member: 
+  member:
   push:
     branches:
     - master
@@ -12,18 +12,18 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Ruby 2.6
+    - name: Set up Ruby 2.7
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: 2.7.x
     - name: Rspec
-      env: 
+      env:
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
         bundle exec rspec
-        
+
