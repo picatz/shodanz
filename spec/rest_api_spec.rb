@@ -7,7 +7,7 @@ RSpec.describe Shodanz::API::REST do
 
   before(:each) do
     # try to avoid rate limit
-    sleep 1
+    sleep 3
   end
 
   describe '#info' do
