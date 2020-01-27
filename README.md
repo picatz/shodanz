@@ -1,5 +1,8 @@
 # Shodanz
 
+[![Gem Version](https://badge.fury.io/rb/shodanz.svg)](https://badge.fury.io/rb/shodanz)
+[![Yard Docs](http://img.shields.io/badge/shodanz-docs-blue.svg)](https://www.rubydoc.info/gems/shodanz/)
+
 A modern, async Ruby [gem](https://rubygems.org/) for [Shodan](https://www.shodan.io/), the world's first search engine for Internet-connected devices.
 
 ## Installation
