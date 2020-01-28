@@ -14,32 +14,32 @@ module Shodanz
     module Utils
       # Perform a direct GET HTTP request to the REST API.
       def get(path, **params)
-        return sync_get(path, params) unless Async::Task.current?
+        return sync_get(path, **params) unless Async::Task.current?
 
-        async_get(path, params)
+        async_get(path, **params)
       end
 
       # Perform a direct POST HTTP request to the REST API.
       def post(path, **params)
-        return sync_post(path, params) unless Async::Task.current?
+        return sync_post(path, **params) unless Async::Task.current?
 
-        async_post(path, params)
+        async_post(path, **params)
       end
 
       # Perform the main function of consuming the streaming API.
       def slurp_stream(path, **params)
         if Async::Task.current?
-          async_slurp_stream(path, params) do |result|
+          async_slurp_stream(path, **params) do |result|
             yield result
           end
         else
-          sync_slurp_stream(path, params) do |result|
+          sync_slurp_stream(path, **params) do |result|
             yield result
           end
         end
       end
 
-      def turn_into_query(params)
+      def turn_into_query(**params)
         filters = params.reject { |key, _| key == :query }
         filters.each do |key, value|
           params[:query] << " #{key}:#{value}"
@@ -47,7 +47,7 @@ module Shodanz
         params.select { |key, _| key == :query }
       end
 
-      def turn_into_facets(facets)
+      def turn_into_facets(**facets)
         return {} if facets.nil?
 
         filters = facets.reject { |key, _| key == :facets }
@@ -135,37 +135,37 @@ module Shodanz
 
       def async_get(path, **params)
         Async::Task.current.async do
-          getter(path, params)
+          getter(path, **params)
         end
       end
 
       def sync_get(path, **params)
         Async do
-          getter(path, params)
+          getter(path, **params)
         end.wait
       end
 
       def async_post(path, **params)
         Async::Task.current.async do
-          poster(path, params)
+          poster(path, **params)
         end
       end
 
       def sync_post(path, **params)
         Async do
-          poster(path, params)
+          poster(path, **params)
         end.wait
       end
 
       def async_slurp_stream(path, **params)
         Async::Task.current.async do
-          slurper(path, params) { |data| yield data }
+          slurper(path, **params) { |data| yield data }
         end
       end
 
       def sync_slurp_stream(path, **params)
         Async do
-          slurper(path, params) { |data| yield data }
+          slurper(path, **params) { |data| yield data }
         end.wait
       end
     end

@@ -54,7 +54,7 @@ module Shodanz
       #     puts data
       #   end
       def banners(**params)
-        slurp_stream('shodan/banners', params) do |data|
+        slurp_stream('shodan/banners', **params) do |data|
           yield data
         end
       end
@@ -67,7 +67,7 @@ module Shodanz
       #     puts data
       #   end
       def banners_within_asns(*asns, **params)
-        slurp_stream("shodan/asn/#{asns.join(',')}", params) do |data|
+        slurp_stream("shodan/asn/#{asns.join(',')}", **params) do |data|
           yield data
         end
       end
