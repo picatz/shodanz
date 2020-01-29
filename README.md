@@ -289,10 +289,10 @@ The Exploits API provides access to several exploit/ vulnerability data sources.
 Search across a variety of data sources for exploits and use facets to get summary information.
 
 ```ruby
-client.search("python")             # Search for Snek vulns.
-client.search(post: 22)             # Port number for the affected service if the exploit is remote.
-client.search(type: "shellcode")    # A category of exploit to search for.
-client.search(osvdb: "100007")      # Open Source Vulnerability Database ID for the exploit.
+client.exploits_api.search("python")             # Search for Snyk vulns.
+client.exploits_api.search(port: 22)             # Port number for the affected service if the exploit is remote.
+client.exploits_api.search(type: "shellcode")    # A category of exploit to search for.
+client.exploits_api.search(osvdb: "100007")      # Open Source Vulnerability Database ID for the exploit.
 ```
 
 #### Count
@@ -300,10 +300,10 @@ client.search(osvdb: "100007")      # Open Source Vulnerability Database ID for 
 This method behaves identical to the Exploits API `search` method with the difference that it doesn't return any results.
 
 ```ruby
-client.count("python")             # Count Snek vulns.
-client.count(port: 22)             # Port number for the affected service if the exploit is remote.
-client.count(type: "shellcode")    # A category of exploit to search for.
-client.count(osvdb: "100007")      # Open Source Vulnerability Database ID for the exploit.
+client.exploits_api.count("python")             # Count Snyk vulns.
+client.exploits_api.count(port: 22)             # Port number for the affected service if the exploit is remote.
+client.exploits_api.count(type: "shellcode")    # A category of exploit to search for.
+client.exploits_api.count(osvdb: "100007")      # Open Source Vulnerability Database ID for the exploit.
 ```
 
 ## License
