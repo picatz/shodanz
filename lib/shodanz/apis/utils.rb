@@ -78,11 +78,11 @@ module Shodanz
         return json
       end
 
-      def getter(path, one_shot=false, **params)
+      def getter(path, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # build up url string based on special params
-        url = "#{@url}#{path}?key=#{@key}"
+        url = "/#{path}?key=#{@key}"
         # special params
         params.each do |param,value|
           next if value.is_a?(String) && value.empty?
@@ -90,38 +90,41 @@ module Shodanz
           url += "&#{param}=#{value}"
         end
 
-        resp = @internet.get(url)
+        resp = @client.get(url)
 
-        # parse all lines in the response body as JSON
-        json = JSON.parse(resp.body.join)
+        if resp.success?
+          # parse all lines in the response body as JSON
+          json = JSON.parse(resp.body.join)
 
-        @internet.close if one_shot
+          handle_any_json_errors(json)
 
-        handle_any_json_errors(json)
-
-        return json
+          return json
+        else
+          raise "Got response status #{resp.status}"
+        end
       ensure
+        @client.pool.close
         resp&.close
-        @internet = Async::HTTP::Internet.new if one_shot
       end
 
       def poster(path, one_shot=false, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # make POST request to server
-        resp = @internet.post("#{@url}#{path}?key=#{@key}", params)
+        resp = @client.post("/#{path}?key=#{@key}", params)
 
-        # parse all lines in the response body as JSON
-        json = JSON.parse(resp.body.join)
+        if resp.success?
+          json = JSON.parse(resp.body.join)
 
-        @internet.close if one_shot
+          handle_any_json_errors(json)
 
-        handle_any_json_errors(json)
-
-        return json
+          return json
+        else
+          raise "Got response status #{resp.status}"
+        end
       ensure
+        @client.pool.close
         resp&.close
-        @internet = Async::HTTP::Internet.new if one_shot
       end
 
       def slurper(path, **params)
@@ -132,7 +135,7 @@ module Shodanz
           counter = 0
         end
         # make GET request to server
-        resp = @internet.get("#{@url}#{path}?key=#{@key}", params)
+        resp = @client.get("/#{path}?key=#{@key}", params)
         # read body line-by-line
         until resp.body.nil? || resp.body.empty?
           resp.body.read.each_line do |line|
@@ -151,25 +154,25 @@ module Shodanz
 
       def async_get(path, **params)
         Async::Task.current.async do
-          getter(path, false, **params)
+          getter(path, **params)
         end
       end
 
       def sync_get(path, **params)
         Async do
-          getter(path, true, **params)
+          getter(path, **params)
         end.wait
       end
 
       def async_post(path, **params)
         Async::Task.current.async do
-          poster(path, false, **params)
+          poster(path, **params)
         end
       end
 
       def sync_post(path, **params)
         Async do
-          poster(path, true, **params)
+          poster(path, **params)
         end.wait
       end
 
