@@ -111,7 +111,7 @@ module Shodanz
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # make POST request to server
-        resp = @client.post("/#{path}?key=#{@key}", params)
+        resp = @client.post("/#{path}?key=#{@key}", nil, JSON.dump(params))
 
         if resp.success?
           json = JSON.parse(resp.body.join)
