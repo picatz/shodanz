@@ -25,5 +25,17 @@ module Shodanz
         super
       end
     end
+
+    class AccessDenied < StandardError
+      def initialize(msg = 'Shodan subscription doesn\'t support action, check API permissions!')
+        super
+      end
+    end
+
+    class InvalidKey < StandardError
+      def initialize(msg = 'Invalid API key used, or none given!')
+        super
+      end
+    end
   end
 end
