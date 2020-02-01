@@ -66,35 +66,42 @@ module Shodanz
       NOQUERY   = 'empty search query'
 
       def handle_any_json_errors(json)
-        return json unless json.is_a?(Hash) && json.key?('error')
-
-        raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
-        raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
-        raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
-
-        json
+        if json.is_a?(Hash) && json.key?('error')
+          raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
+          raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
+          raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
+        end
+        return json
       end
 
-      def getter(path, **params)
+      def getter(path, one_shot=false, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # build up url string based on special params
         url = "#{@url}#{path}?key=#{@key}"
         # special params
         params.each do |param,value|
-          url += "&#{param}=#{value}" unless value.is_a?(String) && value.empty?
+          next if value.is_a?(String) && value.empty?
+          value = URI.encode_www_form_component("#{value}")
+          url += "&#{param}=#{value}"
         end
+
         resp = @internet.get(url)
 
         # parse all lines in the response body as JSON
         json = JSON.parse(resp.body.join)
 
+        @internet.close if one_shot
+
         handle_any_json_errors(json)
+
+        return json
       ensure
         resp&.close
+        @internet = Async::HTTP::Internet.new if one_shot
       end
 
-      def poster(path, **params)
+      def poster(path, one_shot=false, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # make POST request to server
@@ -103,9 +110,14 @@ module Shodanz
         # parse all lines in the response body as JSON
         json = JSON.parse(resp.body.join)
 
+        @internet.close if one_shot
+
         handle_any_json_errors(json)
+
+        return json
       ensure
         resp&.close
+        @internet = Async::HTTP::Internet.new if one_shot
       end
 
       def slurper(path, **params)
@@ -135,25 +147,25 @@ module Shodanz
 
       def async_get(path, **params)
         Async::Task.current.async do
-          getter(path, **params)
+          getter(path, false, **params)
         end
       end
 
       def sync_get(path, **params)
         Async do
-          getter(path, **params)
+          getter(path, true, **params)
         end.wait
       end
 
       def async_post(path, **params)
         Async::Task.current.async do
-          poster(path, **params)
+          poster(path, false, **params)
         end
       end
 
       def sync_post(path, **params)
         Async do
-          poster(path, **params)
+          poster(path, true, **params)
         end.wait
       end
 
