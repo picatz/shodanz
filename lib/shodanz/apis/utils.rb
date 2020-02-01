@@ -74,23 +74,31 @@ module Shodanz
         return json
       end
 
-      def getter(path, **params)
+      def getter(path, one_shot=false, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # build up url string based on special params
         url = "#{@url}#{path}?key=#{@key}"
         # special params
         params.each do |param,value|
-          url += "&#{param}=#{value}" unless value.is_a?(String) && value.empty?
+          next if value.is_a?(String) && value.empty?
+          value = URI.encode_www_form_component("#{value}")
+          url += "&#{param}=#{value}"
         end
+
         resp = @internet.get(url)
 
         # parse all lines in the response body as JSON
         json = JSON.parse(resp.body.join)
 
+        @internet.close if one_shot
+
         handle_any_json_errors(json)
+
+        return json
       ensure
         resp&.close
+        @internet = Async::HTTP::Internet.new if one_shot
       end
 
       def poster(path, **params)
