@@ -28,7 +28,7 @@ module Shodanz
       # @param key [String] SHODAN API key, defaulted to the *SHODAN_API_KEY* enviroment variable.
       def initialize(key: ENV['SHODAN_API_KEY'])
         @url      = URL
-        @internet = Async::HTTP::Internet.new
+        @client   = Async::HTTP::Client.new(Async::HTTP::Endpoint.parse(@url))
         self.key  = key
 
         warn 'No key has been found or provided!' unless key?
