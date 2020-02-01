@@ -61,15 +61,19 @@ module Shodanz
 
       private
 
-      RATELIMIT = 'rate limit reached'
-      NOINFO    = 'no information available'
-      NOQUERY   = 'empty search query'
+      RATELIMIT    = 'rate limit reached'
+      NOINFO       = 'no information available'
+      NOQUERY      = 'empty search query'
+      ACCESSDENIED = 'access denied'
+      INVALIDKEY   = 'invalid API key'
 
       def handle_any_json_errors(json)
         if json.is_a?(Hash) && json.key?('error')
           raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
           raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
           raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
+          raise Shodanz::Errors::AccessDenied if json['error'].casecmp(ACCESSDENIED) >= 0
+          raise Shodanz::Errors::InvalidKey if json['error'].casecmp(INVALIDKEY) >= 0
         end
         return json
       end
