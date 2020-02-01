@@ -101,7 +101,7 @@ module Shodanz
         @internet = Async::HTTP::Internet.new if one_shot
       end
 
-      def poster(path, **params)
+      def poster(path, one_shot=false, **params)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # make POST request to server
@@ -110,9 +110,14 @@ module Shodanz
         # parse all lines in the response body as JSON
         json = JSON.parse(resp.body.join)
 
+        @internet.close if one_shot
+
         handle_any_json_errors(json)
+
+        return json
       ensure
         resp&.close
+        @internet = Async::HTTP::Internet.new if one_shot
       end
 
       def slurper(path, **params)
