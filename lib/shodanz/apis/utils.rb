@@ -147,25 +147,25 @@ module Shodanz
 
       def async_get(path, **params)
         Async::Task.current.async do
-          getter(path, **params)
+          getter(path, false, **params)
         end
       end
 
       def sync_get(path, **params)
         Async do
-          getter(path, **params)
+          getter(path, true, **params)
         end.wait
       end
 
       def async_post(path, **params)
         Async::Task.current.async do
-          poster(path, **params)
+          poster(path, false, **params)
         end
       end
 
       def sync_post(path, **params)
         Async do
-          poster(path, **params)
+          poster(path, true, **params)
         end.wait
       end
 
