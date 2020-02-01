@@ -66,13 +66,12 @@ module Shodanz
       NOQUERY   = 'empty search query'
 
       def handle_any_json_errors(json)
-        return json unless json.is_a?(Hash) && json.key?('error')
-
-        raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
-        raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
-        raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
-
-        json
+        if json.is_a?(Hash) && json.key?('error')
+          raise Shodanz::Errors::RateLimited if json['error'].casecmp(RATELIMIT) >= 0
+          raise Shodanz::Errors::NoInformation if json['error'].casecmp(NOINFO) >= 0
+          raise Shodanz::Errors::NoQuery if json['error'].casecmp(NOQUERY) >= 0
+        end
+        return json
       end
 
       def getter(path, **params)
