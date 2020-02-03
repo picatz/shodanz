@@ -15,7 +15,7 @@ module Shodanz
     end
 
     class NoAPIKey < StandardError
-      def initialize(msg = 'No API key has been found or provided! ( setup your SHODAN_API_KEY environment varialbe )')
+      def initialize(msg = 'No API key has been found or provided! ( setup your SHODAN_API_KEY environment variable )')
         super
       end
     end
