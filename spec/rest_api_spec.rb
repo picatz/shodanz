@@ -316,7 +316,14 @@ RSpec.describe Shodanz::API::REST do
         resp = @client.reverse_lookup(ip)
       end
       expect(resp).to be_a(Hash)
-      expect(resp[ip]).to be_a(Array)
+      expect('8.8.8.8').not_to be nil
+
+      # NOTE: this was the old behavior...
+      #
+      #  Now it's in the form ip => [ dns_names ... ]
+      # {"8.8.8.8"=>["dns.google"]}
+      #
+      # expect(resp[ip]).to be_a(Array)
       # expect(resp[ip].first).to eq('google-public-dns-a.google.com')
     end
 
