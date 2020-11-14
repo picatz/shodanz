@@ -20,10 +20,10 @@ module Shodanz
       end
 
       # Perform a direct POST HTTP request to the REST API.
-      def post(path, **params)
-        return sync_post(path, **params) unless Async::Task.current?
+      def post(path, body: nil, **params)
+        return sync_post(path, params: params, body: body) unless Async::Task.current?
 
-        async_post(path, **params)
+        async_post(path, params: params, body: body)
       end
 
       # Perform the main function of consuming the streaming API.
@@ -107,11 +107,20 @@ module Shodanz
         resp&.close
       end
 
-      def poster(path, one_shot=false, **params)
+      def poster(path, one_shot: false, params: nil, body: nil)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
+        # and the key param is constant
+        params["key"] = @key
+        # encode as a URL string
+        params = URI.encode_www_form(params)
+        # optional JSON body string
+        json_body = body.nil? ? nil : JSON.dump(body)
+        # build URL path
+        path = "/#{path}?#{params}" 
+
         # make POST request to server
-        resp = @client.post("/#{path}?key=#{@key}", nil, JSON.dump(params))
+        resp = @client.post(path, nil, json_body)
 
         if resp.success?
           json = JSON.parse(resp.body.join)
@@ -164,15 +173,15 @@ module Shodanz
         end.wait
       end
 
-      def async_post(path, **params)
+      def async_post(path, params: nil, body: nil)
         Async::Task.current.async do
-          poster(path, **params)
+          poster(path, params: params, body: body)
         end
       end
 
-      def sync_post(path, **params)
+      def sync_post(path, params: nil, body: nil)
         Async do
-          poster(path, **params)
+          poster(path, params: params, body: body)
         end.wait
       end
 
