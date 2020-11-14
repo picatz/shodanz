@@ -349,7 +349,7 @@ RSpec.describe Shodanz::API::REST do
       end
       expect(resp).to be_a(Hash)
       expect(resp['Content-Length']).to be_a(String)
-      expect(resp['Content-Length']).to eq('0')
+      expect(resp['Content-Length']).to eq('')
       # TODO maybe specify a content-type?
       expect(resp['Content-Type']).to be_a(String)
       expect(resp['Content-Type']).to eq('')
