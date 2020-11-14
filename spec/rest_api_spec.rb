@@ -348,9 +348,6 @@ RSpec.describe Shodanz::API::REST do
         resp = @client.http_headers
       end
       expect(resp).to be_a(Hash)
-      # TODO figure out why there are two content length headers?
-      expect(resp['Content_Length']).to be_a(String)
-      expect(resp['Content_Length']).to eq('0')
       expect(resp['Content-Length']).to be_a(String)
       expect(resp['Content-Length']).to eq('0')
       # TODO maybe specify a content-type?
