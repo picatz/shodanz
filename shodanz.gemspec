@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'async-rspec', '~> 1.15.0'
   spec.add_development_dependency 'bundler', '~> 2.2.0'
-  spec.add_development_dependency 'pry', '~> 0.13.0'
+  spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rake', '~> 13.0.0'
   spec.add_development_dependency 'rb-readline', '~> 0.5.5'
   spec.add_development_dependency 'rspec', '~> 3.10.0'
