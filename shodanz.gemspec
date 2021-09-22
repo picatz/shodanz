@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'async-http', '>= 0.38.1', '< 0.55.0'
   spec.add_dependency 'async', '>= 1.17.1', '< 1.30.0'
 
-  spec.add_development_dependency 'async-rspec', '~> 1.15.0'
+  spec.add_development_dependency 'async-rspec', '~> 1.16.1'
   spec.add_development_dependency 'bundler', '~> 2.2.0'
   spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rake', '~> 13.0.0'
