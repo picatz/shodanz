@@ -27,7 +27,7 @@ jobs:
       env:
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
       run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+        gem install bundler:2.2.33
+        bundle _2.2.33_ install --jobs 4 --retry 3
         bundle exec rspec
 
