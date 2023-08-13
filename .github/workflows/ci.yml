@@ -18,11 +18,10 @@ jobs:
       github.actor == 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby 2.7
-      uses: actions/setup-ruby@v1
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7.x
+        ruby-version: '3.0'
     - name: Rspec
       env:
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
