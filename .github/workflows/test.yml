@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   - cron: "0 9 * * *"
 
 jobs:
-  test:
+  rspec:
     if: |
       github.actor == 'picatz' ||
       github.actor == 'dependabot[bot]' ||
@@ -23,7 +23,7 @@ jobs:
       with:
         ruby-version: '3.0'
         bundler-cache: true
-    - name: Rspec
+    - name: RSpec
       env:
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
       run: |
