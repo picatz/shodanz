@@ -17,7 +17,9 @@ require "shodanz"
 
 client = Shodanz.client.new(key: "YOUR_API_KEY")
 ```
-> **NOTE:** You can also set the `SHODAN_API_KEY` environment variable instead of passing the API key as an argument when creating a client.
+
+> **Note**
+> You can also set the `SHODAN_API_KEY` environment variable instead of passing the API key as an argument when creating a client.
 
 ### Optional Async Support
 
