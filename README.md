@@ -9,6 +9,7 @@ A modern, async Ruby [gem](https://rubygems.org/) for [Shodan](https://www.shoda
 ## Installation
 
     $ gem install shodanz
+
 ## Usage
 
 ```ruby
@@ -16,36 +17,16 @@ require "shodanz"
 
 client = Shodanz.client.new(key: "YOUR_API_KEY")
 ```
-> **NOTE:** You can also set the `SHODAN_API_KEY` environment variable instead of passing the API key as an argument when creating a client.
+
+> **Note**
+> You can also set the `SHODAN_API_KEY` environment variable instead of passing the API key as an argument when creating a client.
 
 ### Optional Async Support
 
 Shodanz utilizes [async](https://github.com/socketry/async) to provide asyncronous IO. This doesn't break any existing scripts using Shodanz, but now offers even more flexibility to write more awesome things, like this asyncronous honeypot detector:
 
-```ruby
-require 'async'
-require 'shodanz'
-
-client = Shodanz.client.new
-
-# Asynchronously stream banner info from shodan  and check any
-# IP addresses against the experimental honeypot scoring service.
-client.streaming_api.banners do |banner|
-  if ip = banner['ip_str']
-    Async do
-      score = client.rest_api.honeypot_score(ip).wait
-      puts "#{ip} has a #{score * 100}% chance of being a honeypot"
-    rescue Shodanz::Errors::RateLimited
-      sleep rand
-      retry
-    rescue # any other errors
-      next
-    end
-  end
-end
-```
-
-> **Note:** To run any Shodanz method asyncronously, simply wrap it in a `Async { ... }` block. To wait for any other async operation to finnish in the block, call `.wait` on it.
+> **Note**
+> To run any Shodanz method asyncronously, simply wrap it in a `Async { ... }` block. To wait for any other async operation to finnish in the block, call `.wait` on it.
 
 ## REST API
 

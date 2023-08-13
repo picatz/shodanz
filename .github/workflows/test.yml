@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   push:
@@ -11,23 +11,20 @@ on:
   - cron: "0 9 * * *"
 
 jobs:
-  test:
+  rspec:
     if: |
       github.actor == 'picatz' ||
       github.actor == 'dependabot[bot]' ||
       github.actor == 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby 2.7
-      uses: actions/setup-ruby@v1
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7.x
-    - name: Rspec
+        ruby-version: '3.0'
+        bundler-cache: true
+    - name: RSpec
       env:
         SHODAN_API_KEY: ${{secrets.SHODAN_API_KEY}}
       run: |
-        gem install bundler:2.2.33
-        bundle _2.2.33_ install --jobs 4 --retry 3
-        bundle exec rspec
-
+        bundle exec rake
