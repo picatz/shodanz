@@ -419,30 +419,33 @@ RSpec.describe Shodanz::API::REST do
     end
   end
 
-  describe '#honeypot_score' do
-    let(:ip) { '8.8.8.8' }
-
-    def check
-      if Async::Task.current?
-        resp = @client.honeypot_score(ip).wait
-      else
-        resp = @client.honeypot_score(ip)
-      end
-      expect(resp).to be_a(Float)
-      expect(resp).to eq(0.0)
-    end
-
-    describe 'returns the calculated likelihood a given IP is a honeypot' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
-        end
-      end
-    end
-  end
+  # This no longer seems to be available, or at least it's not documented
+  # clearly anywhere I can find. It just stopped working.
+  #
+  # describe '#honeypot_score' do
+  #   let(:ip) { '8.8.8.8' }
+  # 
+  #   def check
+  #     if Async::Task.current?
+  #       resp = @client.honeypot_score(ip).wait
+  #     else
+  #       resp = @client.honeypot_score(ip)
+  #     end
+  #     expect(resp).to be_a(Float)
+  #     expect(resp).to eq(0.0)
+  #   end
+  #
+  #   describe 'returns the calculated likelihood a given IP is a honeypot' do
+  #     it 'works synchronously' do
+  #       check
+  #     end
+  #
+  #     it 'works asynchronously' do
+  #       Async do
+  #         check
+  #       end
+  #     end
+  #   end
+  # end
 
 end
