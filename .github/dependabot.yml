@@ -6,10 +6,3 @@ updates:
     interval: daily
     time: "10:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: async-http
-    versions:
-    - 0.55.0
-  - dependency-name: pry
-    versions:
-    - 0.14.0
