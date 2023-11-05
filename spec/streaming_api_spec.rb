@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe Shodanz::API::Streaming do
+  include_context Async::RSpec::Reactor
+
   before do
     @client = Shodanz.api.streaming.new
   end
@@ -11,20 +13,10 @@ RSpec.describe Shodanz::API::Streaming do
   end
 
   describe '#banners' do
-    def check
-      @client.banners(limit: 1) do |banner|
-        expect(banner).to be_a(Hash)
-      end
-    end
-
-    describe 'stream any banner data Shodan collects' do
-      it 'works synchronously' do
-        check
-      end
-
-      it 'works asynchronously' do
-        Async do
-          check
+    it "should stream any banner data Shodan collects" do
+      reactor.async do
+        @client.banners(limit: 1) do |banner|
+          expect(banner).to be_a(Hash)
         end
       end
     end
