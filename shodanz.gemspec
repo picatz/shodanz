@@ -20,13 +20,13 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'async-http', '>= 0.38.1', '< 0.57.0'
-  spec.add_dependency 'async', '>= 1.17.1', '< 2.1.0'
+  spec.add_dependency 'async-http', '>= 0.38.1', '< 0.62.0'
+  spec.add_dependency 'async', '>= 1.17.1', '< 2.7.0'
 
-  spec.add_development_dependency 'async-rspec', '~> 1.16.1'
-  spec.add_development_dependency 'bundler', '~> 2.2.0'
+  spec.add_development_dependency 'async-rspec', '~> 1.17.0'
+  spec.add_development_dependency 'bundler', '~> 2.4.0'
   spec.add_development_dependency 'pry', '~> 0.14.1'
-  spec.add_development_dependency 'rake', '~> 13.0.0'
+  spec.add_development_dependency 'rake', '~> 13.1.0'
   spec.add_development_dependency 'rb-readline', '~> 0.5.5'
-  spec.add_development_dependency 'rspec', '~> 3.11.0'
+  spec.add_development_dependency 'rspec', '~> 3.12.0'
 end
