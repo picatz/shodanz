@@ -108,7 +108,7 @@ module Shodanz
       #
       # IP, IPs or netblocks (in CIDR notation) that should get crawled.
       def scan(*ips)
-        post('shodan/scan', ips: ips.join(','))
+        post('shodan/scan', body: {ips: ips.join(',')})
       end
 
       # Use this method to request Shodan to crawl the Internet for a specific port.

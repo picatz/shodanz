@@ -107,20 +107,25 @@ module Shodanz
         resp&.close
       end
 
-      def poster(path, one_shot: false, params: nil, body: nil)
+      def poster(path, params: nil, body: nil)
         # param keys should all be strings
         params = params.transform_keys(&:to_s)
         # and the key param is constant
         params["key"] = @key
         # encode as a URL string
         params = URI.encode_www_form(params)
-        # optional JSON body string
-        json_body = body.nil? ? nil : JSON.dump(body)
         # build URL path
-        path = "/#{path}?#{params}" 
+        path = "/#{path}?#{params}"
+
+        headers = nil
+
+        if body
+          body = URI.encode_www_form(body)
+          headers = [['Content-Type', 'application/x-www-form-urlencoded']]
+        end
 
         # make POST request to server
-        resp = @client.post(path, nil, json_body)
+        resp = @client.post(path, headers, body)
 
         if resp.success?
           json = JSON.parse(resp.body.join)
