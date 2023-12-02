@@ -14,10 +14,8 @@ RSpec.describe Shodanz::API::Streaming do
 
   describe '#banners' do
     it "should stream any banner data Shodan collects" do
-      reactor.async do
-        @client.banners(limit: 1) do |banner|
-          expect(banner).to be_a(Hash)
-        end
+      @client.banners(limit: 1) do |banner|
+        expect(banner).to be_a(Hash)
       end
     end
   end
