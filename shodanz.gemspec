@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rake', '~> 13.1.0'
   spec.add_development_dependency 'rb-readline', '~> 0.5.5'
-  spec.add_development_dependency 'rspec', '~> 3.12.0'
+  spec.add_development_dependency 'rspec', '~> 3.13.0'
 end
