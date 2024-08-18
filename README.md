@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/shodanz.svg)](https://badge.fury.io/rb/shodanz)
 [![Yard Docs](http://img.shields.io/badge/shodanz-docs-blue.svg)](https://www.rubydoc.info/gems/shodanz/)
-![CI](https://github.com/picatz/shodanz/workflows/CI/badge.svg)
+![Test](https://github.com/picatz/shodanz/workflows/Test/badge.svg)
 
 A modern, async Ruby [gem](https://rubygems.org/) for [Shodan](https://www.shodan.io/), the world's first search engine for Internet-connected devices.
 
